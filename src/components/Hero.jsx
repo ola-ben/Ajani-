@@ -11,12 +11,13 @@ const Hero = () => {
           href="https://wa.me/2348123456789?text=Hi%20Ajani%20👋"
           target="_blank"
           rel="noopener noreferrer"
-        ></a>
-        <img
-          src="/ajanibrand/Ajani Branding New/Logo Variations/Ajani_0003_Icon-1.png"
-          alt="Ajani - Your Ibadan Guide"
-          className="w-full h-full object-contain"
-        />
+        >
+          <img
+            src="/ajanibrand/Ajani Branding New/Logo Variations/Ajani_0003_Icon-1.png"
+            alt="Ajani - Your Ibadan Guide"
+            className="w-full h-full object-contain"
+          />
+        </a>
       </div>
 
       <h1 className="text-3xl md:text-5xl font-extrabold mb-4">

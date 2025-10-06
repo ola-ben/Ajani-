@@ -26,15 +26,15 @@ const Header = () => {
             {/* Logo */}
             <div className="flex items-center gap-3">
               <a href="#" onClick={closeMenu}>
+                <img
+                  src="/ajanibrand/Ajani Branding New/Logo Variations/Ajani_0007_Logo-2.png"
+                  alt="Ajani Logo"
+                  className="h-10"
+                />
                 <div className="text-sm text-slate-500 font-rubik">
                   Ibadan Price Insights
                 </div>
-              </a>{" "}
-              <img
-                src="/ajanibrand/Ajani Branding New/Logo Variations/Ajani_0007_Logo-2.png"
-                alt="Ajani Logo"
-                className="h-10"
-              />
+              </a>
             </div>
 
             {/* Desktop Navigation */}
