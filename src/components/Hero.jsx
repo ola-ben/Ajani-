@@ -20,7 +20,7 @@ const Hero = () => {
         </a>
       </div>
 
-      <h1 className="lg:text-4xl md:text-5xl text-2xl font-extrabold md:font-extrabold lg:font-extrabold mb-4">
+      <h1 className="lg:text-4xl md:text-5xl text-4xl font-extrabold md:font-extrabold lg:font-extrabold mb-4">
         Hi, I'm Ajani — Your Ibadan Guide
       </h1>
 
