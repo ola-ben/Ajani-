@@ -13,7 +13,7 @@ const Hero = () => {
           rel="noopener noreferrer"
         >
           <img
-            src="/ajanibrand/ajaniimages/logos/Ajani_0003_Icon-1.png"
+            src="/logos/logo8.png"
             alt="Ajani - Your Ibadan Guide"
             className="w-full h-full object-contain"
           />

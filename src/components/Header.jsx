@@ -26,11 +26,7 @@ const Header = () => {
             {/* Logo */}
             <div className="flex items-center gap-3">
               <a href="#" onClick={closeMenu}>
-                <img
-                  src="/ajanibrand/ajaniimages/logos/Ajani_0007_Logo-2.png"
-                  alt="Ajani Logo"
-                  className="h-10"
-                />
+                <img src="/logos/logo8.png" alt="Ajani Logo" className="h-10" />
                 <div className="text-sm text-slate-500 font-rubik">
                   Ibadan Price Insights
                 </div>
@@ -111,11 +107,7 @@ const Header = () => {
             {/* Header with logo and close button */}
             <div className="p-5 border-b flex justify-between items-center">
               <a href="#" onClick={closeMenu}>
-                <img
-                  src="/ajanibrand/ajaniimages/logos/Ajani_0007_Logo-2.png"
-                  alt="Ajani Logo"
-                  className="h-10"
-                />
+                <img src="/logos/logo1.png" alt="Ajani Logo" className="h-10" />
                 <div className="text-sm text-slate-500 font-rubik mb-[-2px]">
                   Ibadan Price Insights
                 </div>
