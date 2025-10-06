@@ -13,15 +13,14 @@ const FeaturedBanner = () => {
       button: "Learn More",
       color: "bg-blue-50",
       buttonColor: "bg-blue-600 hover:bg-blue-700",
-      // ✅ REAL IMAGE URL (replace with your own)
       image:
-        "https://media.istockphoto.com/id/2207324198/photo/buffet-style-serving-in-chafing-dish.jpg?s=1024x1024&w=is&k=20&c=ORtP-Vc-AmtBXMme8v3pjULWpZ8FcAugXuPbOFtO_Tc=", // Nigerian food
+        "https://media.istockphoto.com/id/2207324198/photo/buffet-style-serving-in-chafing-dish.jpg?s=1024x1024&w=is&k=20&c=ORtP-Vc-AmtBXMme8v3pjULWpZ8FcAugXuPbOFtO_Tc=",
       adContent: (
         <div className="text-center">
           <img
             src="https://media.istockphoto.com/id/2207324198/photo/buffet-style-serving-in-chafing-dish.jpg?s=1024x1024&w=is&k=20&c=ORtP-Vc-AmtBXMme8v3pjULWpZ8FcAugXuPbOFtO_Tc="
             alt="Amala Skye"
-            className="mx-auto mb-4 rounded-lg shadow-md"
+            className="mx-auto mb-4 rounded-lg shadow-md max-h-48 object-contain"
           />
           <h3 className="text-xl font-bold text-gray-800">
             🔥 Amala Skye — Ibadan’s #1 Amala Spot!
@@ -60,15 +59,14 @@ const FeaturedBanner = () => {
       button: "Get Details",
       color: "bg-green-50",
       buttonColor: "bg-green-600 hover:bg-green-700",
-      // ✅ REAL IMAGE URL
       image:
-        "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80", // Festival
+        "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
       adContent: (
         <div className="text-center">
           <img
             src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
             alt="Food Festival"
-            className="mx-auto mb-4 rounded-lg shadow-md"
+            className="mx-auto mb-4 rounded-lg shadow-md max-h-48 object-contain"
           />
           <h3 className="text-xl font-bold text-gray-800">
             🎉 Taste of Ibadan — This Weekend Only!
@@ -113,15 +111,14 @@ const FeaturedBanner = () => {
       button: "Contact",
       color: "bg-yellow-50",
       buttonColor: "bg-yellow-600 hover:bg-yellow-700",
-      // ✅ REAL IMAGE URL
       image:
-        "https://images.unsplash.com/photo-1694825588875-190db201a997?q=80&w=1630&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Market
+        "https://images.unsplash.com/photo-1694825588875-190db201a997?q=80&w=1630&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       adContent: (
         <div className="text-center">
           <img
             src="https://images.unsplash.com/photo-1694825588875-190db201a997?q=80&w=1630&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Dugbe Market"
-            className="mx-auto mb-4 rounded-lg shadow-md"
+            className="mx-auto mb-4 rounded-lg shadow-md max-h-48 object-contain"
           />
           <h3 className="text-xl font-bold text-gray-800">
             🌶️ Dugbe Market — Fresh Spices & Local Delicacies!
@@ -193,15 +190,19 @@ const FeaturedBanner = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+        <div
+          className="flex items-center justify-center  bg-opacity-50 p-4 fixed inset-0 z-50 bg-white bg-opacity-70"
+          onClick={() => setShowModal(null)} // Close on click outside
+        >
           <div
-            className={`relative w-full max-w-md rounded-lg shadow-xl p-6 text-center animate-fadeIn ${
+            className={`relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-lg shadow-xl p-6 text-center animate-fadeIn ${
               showModal === "sponsored"
                 ? "bg-blue-50"
                 : showModal === "weekend-special"
                 ? "bg-green-50"
                 : "bg-yellow-50"
             }`}
+            onClick={(e) => e.stopPropagation()} // Prevent close when clicking inside
           >
             <button
               onClick={() => setShowModal(null)}
@@ -224,7 +225,7 @@ const FeaturedBanner = () => {
         </div>
       )}
 
-      {/* Animation
+      {/* Animation */}
       <style jsx>{`
         @keyframes fadeIn {
           from {
@@ -239,7 +240,7 @@ const FeaturedBanner = () => {
         .animate-fadeIn {
           animation: fadeIn 0.3s ease-out;
         }
-      `}</style> */}
+      `}</style>
     </section>
   );
 };

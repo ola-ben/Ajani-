@@ -2,7 +2,6 @@
 
 @import "tailwindcss";
 
-
 @theme inline {
   /* --color-pc: #ff5c00; */
   /* --color-ph: #ff4d00; */
@@ -26,6 +25,14 @@ section[id] {
 }
 
 /* Custom slider styling */
+::-webkit-scrollbar {
+  display: none;
+}
+
+.ch::-webkit-scrollbar {
+  display: none;
+}
+
 .slider::-webkit-slider-thumb {
   appearance: none;
   height: 20px;
@@ -34,7 +41,7 @@ section[id] {
   background: #10b981;
   cursor: pointer;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
-}npm run dev
+}
 
 .slider::-moz-range-thumb {
   height: 20px;
