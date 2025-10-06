@@ -14,7 +14,7 @@ const Hero = () => {
         >
           <img
             src="/logos/logo8.png"
-            alt="Ajani - Your Ibadan Guide"
+            alt="Ajani - Your Ibadan Guid"
             className="w-full h-full object-contain"
           />
         </a>
