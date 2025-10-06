@@ -20,11 +20,11 @@ const Hero = () => {
         </a>
       </div>
 
-      <h1 className="text-4xl md:text-5xl font-extrabold md:font-extrabold lg:font-extrabold mb-4">
+      <h1 className="text-4xl md:text-5xl font-bold md:font-extrabold lg:font-extrabold mb-4">
         Hi, I'm Ajani — Your Ibadan Guide
       </h1>
 
-      <p className="lg:text-lg text-[15px] md:text-xl text-slate-600 mb-8 font-rubik">
+      <p className="lg:text-lg text-2xl font-bold md:text-xl text-slate-600 mb-8 font-rubik">
         Ask me anything: Where's the cheapest amala in Bodija? Best hotels under
         ₦10,000? Weekend events happening now?
       </p>
