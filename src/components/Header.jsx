@@ -27,7 +27,7 @@ const Header = () => {
             <div className="flex items-center gap-3">
               <a href="#" onClick={closeMenu}>
                 <img
-                  src="/ajanibrand/Ajani Branding New/Logo Variations/Ajani_0007_Logo-2.png"
+                  src="/ajanibrand/ajaniimages/logos/Ajani_0007_Logo-2.png"
                   alt="Ajani Logo"
                   className="h-10"
                 />
@@ -39,15 +39,16 @@ const Header = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex gap-6 text-slate-500 font-medium font-rubik">
-              <a href="#toppicks" className="hover:text-blue-600">
-                Top Picks
-              </a>
               <a href="#priceinsight" className="hover:text-blue-600">
                 Price Insights
               </a>
               <a href="#vendors" className="hover:text-blue-600">
                 For Businesses
               </a>
+              <a href="#toppicks" className="hover:text-blue-600">
+                Top Picks
+              </a>
+
               <a href="#directory" className="hover:text-blue-600">
                 Directory
               </a>
@@ -111,7 +112,7 @@ const Header = () => {
             <div className="p-5 border-b flex justify-between items-center">
               <a href="#" onClick={closeMenu}>
                 <img
-                  src="/ajanibrand/Ajani Branding New/Logo Variations/Ajani_0007_Logo-2.png"
+                  src="/ajanibrand/ajaniimages/logos/Ajani_0007_Logo-2.png"
                   alt="Ajani Logo"
                   className="h-10"
                 />

@@ -19,10 +19,11 @@ function App() {
         <Hero />
         <PriceInsightsDashboard />
         <FeaturedBanner />
+        <VendorForm />
+
         {/* <SponsoredBanner /> */}
         <AiTopPicks />
         <Directory />
-        <VendorForm />
         <FAQ />
       </main>
       <Footer />
