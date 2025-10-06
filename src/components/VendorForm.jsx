@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 
 const VendorForm = () => {
-  // ✅ ONLY include fields that exist in your Google Sheet
   const [formData, setFormData] = useState({
-    "Email address": "",
-    "Business/Place Name": "",
-    Category: "",
-    "Area / Neighborhood": "",
-    "Short Description": "",
-    "Full Address": "",
-    "Phone Number": "",
-    "Website/social media Link": "",
+    businessName: "",
+    category: "",
+    area: "",
+    startingPrice: "",
+    whatsapp: "",
+    address: "",
+    shortDescription: "",
+    itemPrices: [],
+    businessImage: null,
   });
 
   const categories = [
@@ -22,119 +22,115 @@ const VendorForm = () => {
     "Entertainment",
   ];
 
-  const areas = [
-    "Bodija",
-    "UI Area",
-    "Agodi",
-    "Dugbe",
-    "Sango",
-    "Mokola",
-    "Eleyele",
-  ];
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type and size
+      const validTypes = ["image/png", "image/jpeg", "image/jpg"];
+      const maxSize = 5 * 1024 * 1024; // 5MB
 
-    // ✅ YOUR WEB APP URL (NO SPACES!)
-    const SCRIPT_URL =
-      "https://script.google.com/macros/s/AKfycbztYxc53seJ2mNXzrmQiJwGQA0RyhmQSOL1UtcSK86EpVZMolBNHOFmA31d68JxHYSd/exec";
-
-    try {
-      const response = await fetch(SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-      if (result.status === "success") {
-        alert("✅ Business submitted! Ajani will review shortly.");
-        setFormData({
-          "Email address": "",
-          "Business/Place Name": "",
-          Category: "",
-          "Area / Neighborhood": "",
-          "Short Description": "",
-          "Full Address": "",
-          "Phone Number": "",
-          "Website/social media Link": "",
-        });
-      } else {
-        throw new Error(result.message || "Submission failed");
+      if (!validTypes.includes(file.type)) {
+        alert("Only PNG, JPG, JPEG files are allowed.");
+        return;
       }
-    } catch (error) {
-      console.error("Error:", error);
-      alert(
-        "❌ Submission failed. Please try again or chat with Ajani for help."
-      );
+
+      if (file.size > maxSize) {
+        alert("File size must be less than 5MB.");
+        return;
+      }
+
+      setFormData((prev) => ({ ...prev, businessImage: file }));
     }
   };
 
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({ ...prev, businessImage: null }));
+  };
+
+  const handleAddItemPrice = () => {
+    setFormData((prev) => ({
+      ...prev,
+      itemPrices: [...prev.itemPrices, { itemName: "", price: "" }],
+    }));
+  };
+
+  const handleRemoveItemPrice = (index) => {
+    setFormData((prev) => {
+      const newItems = [...prev.itemPrices];
+      newItems.splice(index, 1);
+      return { ...prev, itemPrices: newItems };
+    });
+  };
+
+  const handleItemPriceChange = (index, field, value) => {
+    setFormData((prev) => {
+      const newItems = [...prev.itemPrices];
+      newItems[index][field] = value;
+      return { ...prev, itemPrices: newItems };
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Form submitted:", formData);
+    alert(
+      "✅ Form submitted! We’ll review and add you to our catalog within 24 hours."
+    );
+  };
+
   return (
-    <section id="vendors" className="py-16 bg-white">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">
-            For Business Owners
+    <section id="vendors" className="py-16 bg-gray-900 text-white">
+      <div className="max-w-5xl mx-auto px-4">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold mb-2">
+            List your business on Ajani
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Ajani will learn about your business and recommend you to customers
-            automatically. List your business to reach thousands of potential
-            customers in Ibadan.
+          <p className="text-gray-300">
+            Reach thousands of potential customers in Ibadan
           </p>
         </div>
 
-        <div className="bg-gray-50 p-6 rounded-lg shadow-sm border border-slate-200">
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+          <p className="text-sm text-gray-400 mb-6">
+            Fill this form — we’ll review and add you to our catalog within 24
+            hours.
+          </p>
+
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="Email address"
-                value={formData["Email address"]}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                required
-              />
-            </div>
-
             {/* Business Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Business/Place Name
-              </label>
-              <input
-                type="text"
-                name="Business/Place Name"
-                value={formData["Business/Place Name"]}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                required
-              />
-            </div>
-
-            {/* Category & Area */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-200 mb-1">
+                  Business name
+                </label>
+                <input
+                  type="text"
+                  name="businessName"
+                  value={formData.businessName}
+                  onChange={handleChange}
+                  placeholder="e.g., Amala Skye"
+                  className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-200 mb-1">
                   Category
                 </label>
                 <select
-                  name="Category"
-                  value={formData["Category"]}
+                  name="category"
+                  value={formData.category}
                   onChange={handleChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white"
                   required
                 >
-                  <option value="">Select Category</option>
+                  <option value="">Select category</option>
                   {categories.map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
@@ -142,107 +138,219 @@ const VendorForm = () => {
                   ))}
                 </select>
               </div>
+            </div>
+
+            {/* Area, Starting Price, WhatsApp */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-200 mb-1">
+                  Area
+                </label>
+                <input
+                  type="text"
+                  name="area"
+                  value={formData.area}
+                  onChange={handleChange}
+                  placeholder="e.g., Bodija"
+                  className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400"
+                  required
+                />
+              </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Area / Neighborhood
+                <label className="block text-sm font-medium text-gray-200 mb-1">
+                  Starting price (₦)
                 </label>
-                <select
-                  name="Area / Neighborhood"
-                  value={formData["Area / Neighborhood"]}
+                <input
+                  type="number"
+                  name="startingPrice"
+                  value={formData.startingPrice}
                   onChange={handleChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  placeholder="1500"
+                  className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400"
                   required
-                >
-                  <option value="">Select Area</option>
-                  {areas.map((area) => (
-                    <option key={area} value={area}>
-                      {area}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-200 mb-1">
+                  WhatsApp Number
+                </label>
+                <input
+                  type="tel"
+                  name="whatsapp"
+                  value={formData.whatsapp}
+                  onChange={handleChange}
+                  placeholder="+23480..."
+                  className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Address */}
+            <div>
+              <label className="block text-sm font-medium text-gray-200 mb-1">
+                Address
+              </label>
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                placeholder="Street, area, Ibadan"
+                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400"
+                required
+              />
             </div>
 
             {/* Short Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Short Description
+              <label className="block text-sm font-medium text-gray-200 mb-1">
+                Short description
               </label>
               <textarea
-                name="Short Description"
-                value={formData["Short Description"]}
+                name="shortDescription"
+                value={formData.shortDescription}
                 onChange={handleChange}
-                rows={2}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                placeholder="e.g., Authentic amala with assorted meats..."
+                placeholder="What makes your business great?"
+                rows={3}
+                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400"
                 required
               />
             </div>
 
-            {/* Full Address */}
+            {/* Business Image */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Full Address
+              <label className="block text-sm font-medium text-gray-200 mb-1">
+                Business Image
               </label>
-              <input
-                type="text"
-                name="Full Address"
-                value={formData["Full Address"]}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                placeholder="e.g., Opposite UI Gate, Bodija"
-                required
-              />
+              <div
+                className={`border-2 border-dashed border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition ${
+                  formData.businessImage ? "bg-gray-700" : ""
+                }`}
+                onClick={() =>
+                  document.getElementById("businessImageInput").click()
+                }
+              >
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg, image/jpg"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  id="businessImageInput"
+                />
+
+                {formData.businessImage ? (
+                  <div className="relative w-full h-32 flex items-center justify-center">
+                    <img
+                      src={URL.createObjectURL(formData.businessImage)}
+                      alt="Preview"
+                      className="max-h-full max-w-full object-contain"
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveImage();
+                      }}
+                      className="absolute top-2 right-2 p-1 bg-red-600 hover:bg-red-700 text-white rounded-full text-xs"
+                    >
+                      ×
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        document.getElementById("businessImageInput").click();
+                      }}
+                      className="absolute bottom-2 left-2 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs"
+                    >
+                      Change Image
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="mx-auto h-8 w-8 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      />
+                    </svg>
+                    <p className="mt-2 text-sm text-gray-400">
+                      Click to upload or drag and drop
+                    </p>
+                    <p className="text-xs text-gray-500">PNG, JPG up to 5MB</p>
+                  </>
+                )}
+              </div>
             </div>
 
-            {/* Phone Number */}
+            {/* Item Prices */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone Number (WhatsApp preferred)
+              <label className="block text-sm font-medium text-gray-200 mb-1">
+                Item Prices (e.g., Amala 1200, Ewedu 500, Rice 4000)
               </label>
-              <input
-                type="tel"
-                name="Phone Number"
-                value={formData["Phone Number"]}
-                onChange={handleChange}
-                placeholder="+2348012345678"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                required
-              />
+              <div className="space-y-3">
+                {formData.itemPrices.map((item, index) => (
+                  <div key={index} className="flex items-center space-x-3">
+                    <input
+                      type="text"
+                      placeholder="Item name"
+                      value={item.itemName}
+                      onChange={(e) =>
+                        handleItemPriceChange(index, "itemName", e.target.value)
+                      }
+                      className="flex-1 p-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Price (₦)"
+                      value={item.price}
+                      onChange={(e) =>
+                        handleItemPriceChange(index, "price", e.target.value)
+                      }
+                      className="flex-1 p-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveItemPrice(index)}
+                      className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={handleAddItemPrice}
+                  className="mt-2 text-sm text-blue-400 hover:text-blue-300"
+                >
+                  + Add another item
+                </button>
+              </div>
             </div>
 
-            {/* Website/Social Media */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Website / Social Media Link (Optional)
-              </label>
-              <input
-                type="url"
-                name="Website/social media Link"
-                value={formData["Website/social media Link"]}
-                onChange={handleChange}
-                placeholder="https://instagram.com/yourbusiness"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              />
-            </div>
-
-            {/* Submit Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            {/* Submit Button */}
+            <div className="pt-4">
               <button
                 type="submit"
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition shadow"
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
               >
-                Submit to Ajani
+                <i className="fab fa-telegram-plane"></i> Submit Listing
               </button>
-              <a
-                href="https://wa.me/2348123456789?text=Hi%20Ajani%20👋%20I%20need%20help%20with%20my%20business%20listing!"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition shadow"
-              >
-                <i className="fab fa-whatsapp"></i> Chat for Help
-              </a>
+              <p className="mt-2 text-xs text-gray-400">
+                We review all listings. By submitting, you agree your info can
+                be shown publicly on Ajani.
+              </p>
             </div>
           </form>
         </div>

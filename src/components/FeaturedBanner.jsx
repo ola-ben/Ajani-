@@ -1,27 +1,245 @@
-import React from "react";
+import React, { useState } from "react";
 
 const FeaturedBanner = () => {
+  const [showModal, setShowModal] = useState(null);
+
+  const ads = [
+    {
+      id: "sponsored",
+      title: "Sponsored",
+      subtitle: "Promote your business on Ajani",
+      description:
+        "Get featured in area searches — reach local buyers actively looking for your services.",
+      button: "Learn More",
+      color: "bg-blue-50",
+      buttonColor: "bg-blue-600 hover:bg-blue-700",
+      // ✅ REAL IMAGE URL (replace with your own)
+      image:
+        "https://media.istockphoto.com/id/2207324198/photo/buffet-style-serving-in-chafing-dish.jpg?s=1024x1024&w=is&k=20&c=ORtP-Vc-AmtBXMme8v3pjULWpZ8FcAugXuPbOFtO_Tc=", // Nigerian food
+      adContent: (
+        <div className="text-center">
+          <img
+            src="https://media.istockphoto.com/id/2207324198/photo/buffet-style-serving-in-chafing-dish.jpg?s=1024x1024&w=is&k=20&c=ORtP-Vc-AmtBXMme8v3pjULWpZ8FcAugXuPbOFtO_Tc="
+            alt="Amala Skye"
+            className="mx-auto mb-4 rounded-lg shadow-md"
+          />
+          <h3 className="text-xl font-bold text-gray-800">
+            🔥 Amala Skye — Ibadan’s #1 Amala Spot!
+          </h3>
+          <p className="mt-2 text-gray-600">
+            Authentic amala with assorted meats, fresh efo, and hot pepper
+            sauce. Open 7AM–9PM daily.
+          </p>
+          <div className="mt-4 flex justify-center space-x-4 text-sm">
+            <span className="bg-green-100 px-2 py-1 rounded-full">₦1,200</span>
+            <span className="bg-yellow-100 px-2 py-1 rounded-full">⭐ 4.8</span>
+            <span className="bg-red-100 px-2 py-1 rounded-full">Bodija</span>
+          </div>
+          <p className="mt-4 text-sm text-gray-500">
+            *Limited slots available — get featured before the weekend rush!
+          </p>
+          <div className="mt-6">
+            <a
+              href="https://wa.me/2348123456789?text=Hi%20Ajani%20👋%20I%20want%20to%20advertise%20my%20business!"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold transition shadow"
+            >
+              <i className="fab fa-whatsapp"></i> WhatsApp Us to Advertise
+            </a>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "weekend-special",
+      title: "Weekend Special",
+      subtitle: "Taste of Ibadan Food Festival",
+      description:
+        "Experience the best of Ibadan cuisine this weekend at Agodi Gardens. 20+ vendors.",
+      button: "Get Details",
+      color: "bg-green-50",
+      buttonColor: "bg-green-600 hover:bg-green-700",
+      // ✅ REAL IMAGE URL
+      image:
+        "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80", // Festival
+      adContent: (
+        <div className="text-center">
+          <img
+            src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+            alt="Food Festival"
+            className="mx-auto mb-4 rounded-lg shadow-md"
+          />
+          <h3 className="text-xl font-bold text-gray-800">
+            🎉 Taste of Ibadan — This Weekend Only!
+          </h3>
+          <p className="mt-2 text-gray-600">
+            20+ vendors, live music, kids zone, and free parking. Don’t miss
+            out!
+          </p>
+          <div className="mt-4 flex justify-center space-x-4 text-sm">
+            <span className="bg-blue-100 px-2 py-1 rounded-full">
+              ₦1,000 Entry
+            </span>
+            <span className="bg-purple-100 px-2 py-1 rounded-full">
+              Agodi Gardens
+            </span>
+            <span className="bg-orange-100 px-2 py-1 rounded-full">
+              Sat & Sun
+            </span>
+          </div>
+          <p className="mt-4 text-sm text-gray-500">
+            *Bring your family — early birds get free jollof rice!
+          </p>
+          <div className="mt-6">
+            <a
+              href="https://wa.me/2348123456789?text=Hi%20Ajani%20👋%20I%20want%20to%20be%20a%20vendor%20at%20the%20Festival!"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold transition shadow"
+            >
+              <i className="fab fa-whatsapp"></i> WhatsApp Us to Join
+            </a>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "featured-vendor",
+      title: "Featured Vendor",
+      subtitle: "Dugbe Market Delicacies",
+      description:
+        "Fresh produce, spices, and local delicacies. Open daily from 8AM to 6PM.",
+      button: "Contact",
+      color: "bg-yellow-50",
+      buttonColor: "bg-yellow-600 hover:bg-yellow-700",
+      // ✅ REAL IMAGE URL
+      image:
+        "https://images.unsplash.com/photo-1694825588875-190db201a997?q=80&w=1630&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Market
+      adContent: (
+        <div className="text-center">
+          <img
+            src="https://images.unsplash.com/photo-1694825588875-190db201a997?q=80&w=1630&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="Dugbe Market"
+            className="mx-auto mb-4 rounded-lg shadow-md"
+          />
+          <h3 className="text-xl font-bold text-gray-800">
+            🌶️ Dugbe Market — Fresh Spices & Local Delicacies!
+          </h3>
+          <p className="mt-2 text-gray-600">
+            Get the freshest ingredients for your kitchen — yam, pepper, ogbono,
+            and more. Bargain like a pro!
+          </p>
+          <div className="mt-4 flex justify-center space-x-4 text-sm">
+            <span className="bg-red-100 px-2 py-1 rounded-full">₦500/kg</span>
+            <span className="bg-indigo-100 px-2 py-1 rounded-full">Dugbe</span>
+            <span className="bg-teal-100 px-2 py-1 rounded-full">
+              Open 8AM–6PM
+            </span>
+          </div>
+          <p className="mt-4 text-sm text-gray-500">
+            *Ask for Mama Nkechi — she gives the best deals!
+          </p>
+          <div className="mt-6">
+            <a
+              href="https://wa.me/2348123456789?text=Hi%20Ajani%20👋%20I%20want%20to%20list%20my%20stall%20in%20Dugbe%20Market!"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold transition shadow"
+            >
+              <i className="fab fa-whatsapp"></i> WhatsApp Us to List
+            </a>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <section className="py-8 bg-gradient-to-r from-purple-50 to-indigo-50 border-b border-purple-200 font-rubik">
-      <div className="max-w-7xl mx-auto px-5 flex flex-col md:flex-row justify-between items-center gap-6">
-        <div>
-          <span className="inline-block bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded mb-2">
-            Featured
-          </span>
-          <h3 className="text-xl font-bold">Weekend Special Offers</h3>
-          <p className="text-slate-700">
-            Exclusive deals available only through Ajani's recommendations
+    <section className="py-16 bg-gray-900 text-white">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="text-left mb-8">
+          <h2 className="text-2xl font-bold mb-2">Featured Businesses</h2>
+          <p className="text-gray-300">
+            Discover these sponsored listings from local businesses
           </p>
         </div>
-        <a
-          href="https://wa.me/2348123456789?text=Tell me about weekend offers"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2"
-        >
-          <i className="fas fa-comment"></i> Ask Ajani
-        </a>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {ads.map((ad) => (
+            <div
+              key={ad.id}
+              className={`relative rounded-lg shadow-lg p-6 cursor-pointer transition-transform hover:-translate-y-1 ${ad.color}`}
+              onClick={() => setShowModal(ad.id)}
+            >
+              <div className="flex items-start mb-4">
+                <div className="text-xs font-medium text-gray-500">
+                  {ad.title}
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                {ad.subtitle}
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">{ad.description}</p>
+              <button
+                className={`px-4 py-2 rounded-lg font-semibold transition ${ad.buttonColor} text-white`}
+              >
+                {ad.button}
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div
+            className={`relative w-full max-w-md rounded-lg shadow-xl p-6 text-center animate-fadeIn ${
+              showModal === "sponsored"
+                ? "bg-blue-50"
+                : showModal === "weekend-special"
+                ? "bg-green-50"
+                : "bg-yellow-50"
+            }`}
+          >
+            <button
+              onClick={() => setShowModal(null)}
+              className="absolute top-3 right-3 text-gray-600 hover:text-gray-800 text-xl"
+            >
+              ×
+            </button>
+
+            {ads.find((a) => a.id === showModal)?.adContent}
+
+            <div className="mt-6">
+              <button
+                onClick={() => setShowModal(null)}
+                className="px-4 py-2 rounded-lg font-semibold bg-gray-600 hover:bg-gray-700 text-white"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Animation
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+      `}</style> */}
     </section>
   );
 };
