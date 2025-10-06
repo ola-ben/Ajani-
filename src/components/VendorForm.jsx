@@ -106,7 +106,7 @@ const VendorForm = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-200 mb-1">
-                  Business name
+                  Business/Place Name
                 </label>
                 <input
                   type="text"
@@ -144,7 +144,7 @@ const VendorForm = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-200 mb-1">
-                  Area
+                  Area / Neighborhood
                 </label>
                 <input
                   type="text"
@@ -159,7 +159,7 @@ const VendorForm = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-200 mb-1">
-                  Starting price (₦)
+                  Starting Price
                 </label>
                 <input
                   type="number"
@@ -191,7 +191,7 @@ const VendorForm = () => {
             {/* Address */}
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-1">
-                Address
+                Full Address
               </label>
               <input
                 type="text"
@@ -207,7 +207,7 @@ const VendorForm = () => {
             {/* Short Description */}
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-1">
-                Short description
+                Short Description
               </label>
               <textarea
                 name="shortDescription"
@@ -223,7 +223,7 @@ const VendorForm = () => {
             {/* Business Image */}
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-1">
-                Business Image
+                UploadPhoto
               </label>
               <div
                 className={`border-2 border-dashed border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition ${
