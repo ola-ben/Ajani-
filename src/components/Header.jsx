@@ -26,11 +26,7 @@ const Header = () => {
             {/* Logo */}
             <div className="flex items-center gap-3">
               <a href="#" onClick={closeMenu}>
-                <img
-                  src="/public/logos/logo5.png"
-                  alt="Ajani Logo"
-                  className="h-10"
-                />
+                <img src="/logos/logo8.png" alt="Ajani Logo" className="h-10" />
                 <div className="text-sm text-slate-500 font-rubik">
                   Ibadan Price Insights
                 </div>
