@@ -111,11 +111,7 @@ const Header = () => {
             {/* Header with logo and close button */}
             <div className="p-5 border-b flex justify-between items-center">
               <a href="#" onClick={closeMenu}>
-                <img
-                  src="/public/logos/logo5.png"
-                  alt="Ajani Logo"
-                  className="h-10"
-                />
+                <img src="/logos/logo1.png" alt="Ajani Logo" className="h-10" />
                 <div className="text-sm text-slate-500 font-rubik mb-[-2px]">
                   Ibadan Price Insights
                 </div>
