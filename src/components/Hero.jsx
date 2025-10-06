@@ -4,7 +4,7 @@ const Hero = () => {
   return (
     <section
       id="hero" // ✅ Fixed: removed trailing space
-      className="max-w-4xl mx-auto md:px-5 md:py-20 pt-50 mb-40 text-center"
+      className="max-w-4xl mx-auto px-5 py-20  text-center"
     >
       <div className="w-24 h-24 flex items-center justify-center mx-auto mb-6">
         <a
