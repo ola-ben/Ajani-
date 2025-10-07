@@ -72,19 +72,9 @@ const Footer = () => {
           {/* Right: Links + WhatsApp */}
           <div className="flex flex-col justify-between">
             <div className="flex flex-col gap-3">
-              <Link
-                to="/privacypage"
-                className="hover:text-blue-400 transition"
-              >
-                Privacy Policy
-              </Link>
-              <Link to="/termspage" className="hover:text-blue-400 transition">
-                Terms
-              </Link>
-              <Link
-                to="/contactpage"
-                className="hover:text-blue-400 transition"
-              >
+              <Link to="/privacypage">Privacy Policy</Link>
+              <Link to="/termspage">Terms</Link>
+              <Link to="/contact" className="hover:text-blue-400 transition">
                 Contact
               </Link>
             </div>

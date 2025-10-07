@@ -13,9 +13,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="privacypage" element={<PrivacyPage />} />
-          <Route path="termspage" element={<TermsPage />} />
-          <Route path="contactpage" element={<ContactPage />} />
+          <Route path="/privacypage" element={<PrivacyPage />} />
+          <Route path="/termspage" element={<TermsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Routes>
       </BrowserRouter>
     </section>
