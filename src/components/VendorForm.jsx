@@ -9,7 +9,7 @@ const VendorForm = () => {
     whatsapp: "",
     address: "",
     shortDescription: "",
-    itemPrices: [],
+    itemPrices: [{ itemName: "", price: "" }], // Start with one item
     businessImage: null,
   });
 
@@ -30,7 +30,6 @@ const VendorForm = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validate file type and size
       const validTypes = ["image/png", "image/jpeg", "image/jpg"];
       const maxSize = 5 * 1024 * 1024; // 5MB
 
@@ -52,7 +51,8 @@ const VendorForm = () => {
     setFormData((prev) => ({ ...prev, businessImage: null }));
   };
 
-  const handleAddItemPrice = () => {
+  // ✅ Define addItem function
+  const addItem = () => {
     setFormData((prev) => ({
       ...prev,
       itemPrices: [...prev.itemPrices, { itemName: "", price: "" }],
@@ -294,14 +294,17 @@ const VendorForm = () => {
               </div>
             </div>
 
-            {/* Item Prices */}
+            {/* ✅ FIXED: Item Prices - Responsive Grid */}
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-1">
                 Item Prices (e.g., Amala 1200, Ewedu 500, Rice 4000)
               </label>
               <div className="space-y-3">
                 {formData.itemPrices.map((item, index) => (
-                  <div key={index} className="flex items-center space-x-3">
+                  <div
+                    key={index}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center"
+                  >
                     <input
                       type="text"
                       placeholder="Item name"
@@ -309,33 +312,38 @@ const VendorForm = () => {
                       onChange={(e) =>
                         handleItemPriceChange(index, "itemName", e.target.value)
                       }
-                      className="flex-1 p-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400"
+                      className="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400"
                     />
-                    <input
-                      type="number"
-                      placeholder="Price (₦)"
-                      value={item.price}
-                      onChange={(e) =>
-                        handleItemPriceChange(index, "price", e.target.value)
-                      }
-                      className="flex-1 p-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveItemPrice(index)}
-                      className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
-                    >
-                      ×
-                    </button>
+                    <div className="flex space-x-3">
+                      <input
+                        type="number"
+                        placeholder="Price (₦)"
+                        value={item.price}
+                        onChange={(e) =>
+                          handleItemPriceChange(index, "price", e.target.value)
+                        }
+                        className="flex-1 p-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveItemPrice(index)}
+                        className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center justify-center w-10"
+                        aria-label="Remove item"
+                      >
+                        ×
+                      </button>
+                    </div>
                   </div>
                 ))}
-                <button
-                  type="button"
-                  onClick={handleAddItemPrice}
-                  className="mt-2 text-sm text-blue-400 hover:text-blue-300"
-                >
-                  + Add another item
-                </button>
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={addItem}
+                    className="text-blue-400 hover:text-blue-300 text-sm font-medium transition"
+                  >
+                    ➕ Add another item
+                  </button>
+                </div>
               </div>
             </div>
 

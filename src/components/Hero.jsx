@@ -1,13 +1,14 @@
 import React from "react";
 import { useEffect } from "react";
 
+
 const Hero = () => {
-   useEffect(() => {
-     window.scrollTo(0, 0);
-   }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <>
-      <section id="hero" className="bg-gray-900 lg:h-lvh md:h-lvh h-[800px]">
+      <section id="hero" className="bg-[#eef8fd] lg:h-lvh md:h-lvh h-[800px]">
         <div
           // ✅ Fixed: removed trailing space
           className="max-w-4xl mx-auto px-5 py-20  text-center font-rubik "
@@ -19,18 +20,18 @@ const Hero = () => {
               rel="noopener noreferrer"
             >
               <img
-                src="/src/assets/Logos/logo8.png"
+                src="/public/Logos/logo8.png"
                 alt="Ajani - Your Ibadan Guide"
                 className="w-full h-full object-contain"
               />
             </a>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 gradient-text">
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-[#101828]">
             Hi, I'm Ajani — Your Ibadan Guide
           </h1>
 
-          <p className=":lg:text-lg text-[15px] md:text-xl leading-[1.5] text-slate-400 mb-10">
+          <p className=":lg:text-lg text-[15px] md:text-xl leading-[1.5] text-slate-600 mb-10">
             Ask me anything: Where's the cheapest amala in Bodija? Best hotels
             under ₦10,000? Weekend events happening now?
           </p>

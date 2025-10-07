@@ -13,7 +13,7 @@ const Footer = () => {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <img
-                src="/src/assets/Logos/logo6.png"
+                src="/public/Logos/logo6.png"
                 alt="Ajani Logo"
                 className="h-8 w-auto"
               />
