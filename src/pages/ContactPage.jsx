@@ -32,7 +32,7 @@ const ContactPage = () => {
     try {
       // 🔴 REPLACE WITH YOUR GOOGLE APPS SCRIPT URL
       const response = await fetch(
-        "https://script.google.com/macros/s/YOUR_DEPLOYMENT_URL/exec",
+        "https://script.google.com/macros/s/AKfycbxD2JQmZoAyVeDwEp9rluQFm5YPig-r3IQUzRDjmidhvWf_3Tm8nxYOCocIfrhTMZGxng/exec",
         {
           method: "POST",
           mode: "no-cors", // Required for Google Apps Script
