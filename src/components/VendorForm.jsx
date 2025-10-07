@@ -9,9 +9,12 @@ const VendorForm = () => {
     whatsapp: "",
     address: "",
     shortDescription: "",
-    itemPrices: [{ itemName: "", price: "" }], // Start with one item
+    itemPrices: [{ itemName: "", price: "" }],
     businessImage: null,
   });
+
+  const [imageURL, setImageURL] = useState(""); // For Cloudinary URL
+  const [isUploading, setIsUploading] = useState(false);
 
   const categories = [
     "Food & Dining",
@@ -27,31 +30,60 @@ const VendorForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e) => {
+  // ✅ ONLY ONE handleImageChange — using Cloudinary
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const validTypes = ["image/png", "image/jpeg", "image/jpg"];
-      const maxSize = 5 * 1024 * 1024; // 5MB
+    if (!file) return;
 
-      if (!validTypes.includes(file.type)) {
-        alert("Only PNG, JPG, JPEG files are allowed.");
-        return;
+    const validTypes = ["image/png", "image/jpeg", "image/jpg"];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (!validTypes.includes(file.type)) {
+      alert("Only PNG, JPG, JPEG files are allowed.");
+      return;
+    }
+
+    if (file.size > maxSize) {
+      alert("File size must be less than 5MB.");
+      return;
+    }
+
+    setIsUploading(true);
+
+    const formDataCloud = new FormData();
+    formDataCloud.append("file", file);
+    formDataCloud.append("upload_preset", "ajani_upload"); // Your preset name
+
+    try {
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/debpabo0a/image/upload", // 🔴 REPLACE YOUR_CLOUD_NAME
+        {
+          method: "POST",
+          body: formDataCloud,
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.secure_url) {
+        setImageURL(data.secure_url);
+        setFormData((prev) => ({ ...prev, businessImage: data.secure_url }));
+      } else {
+        throw new Error("Upload failed");
       }
-
-      if (file.size > maxSize) {
-        alert("File size must be less than 5MB.");
-        return;
-      }
-
-      setFormData((prev) => ({ ...prev, businessImage: file }));
+    } catch (error) {
+      console.error("Image upload failed:", error);
+      alert("Failed to upload image. Please try again.");
+    } finally {
+      setIsUploading(false);
     }
   };
 
   const handleRemoveImage = () => {
+    setImageURL("");
     setFormData((prev) => ({ ...prev, businessImage: null }));
   };
 
-  // ✅ Define addItem function
   const addItem = () => {
     setFormData((prev) => ({
       ...prev,
@@ -78,26 +110,30 @@ const VendorForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Show loading state (optional)
     const submitBtn = e.target.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = "Submitting...";
     submitBtn.disabled = true;
 
     try {
-      const response = await fetch(
+      const payload = {
+        ...formData,
+        businessImage: imageURL,
+      };
+
+      // 🔴 REPLACE WITH YOUR GOOGLE APPS SCRIPT URL
+      await fetch(
         "https://script.google.com/macros/s/AKfycbxKgc-mo5mWjrXQgY8_sEHDRDtHASPSdSq0wvu8_8dgcTX6DRvIzb_EAaq7mCcbki1r/exec",
         {
           method: "POST",
-          mode: "no-cors", // Required for Google Apps Script
+          mode: "no-cors",
           headers: {
-            "Content-Type": "text/plain", // Must be text/plain for no-cors
+            "Content-Type": "text/plain",
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         }
       );
 
-      // Because of no-cors, we can't read response, but if no error → assume success
       alert(
         "✅ Form submitted! We’ll review and add you to our catalog within 24 hours."
       );
@@ -112,6 +148,7 @@ const VendorForm = () => {
         itemPrices: [{ itemName: "", price: "" }],
         businessImage: null,
       });
+      setImageURL("");
     } catch (error) {
       console.error("Submission failed:", error);
       alert("❌ Failed to submit. Please try again or contact us on WhatsApp.");
@@ -261,11 +298,11 @@ const VendorForm = () => {
             {/* Business Image */}
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-1">
-                UploadPhoto
+                Upload Photo
               </label>
               <div
                 className={`border-2 border-dashed border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition ${
-                  formData.businessImage ? "bg-gray-700" : ""
+                  imageURL ? "bg-gray-700" : ""
                 }`}
                 onClick={() =>
                   document.getElementById("businessImageInput").click()
@@ -279,10 +316,10 @@ const VendorForm = () => {
                   id="businessImageInput"
                 />
 
-                {formData.businessImage ? (
+                {imageURL ? (
                   <div className="relative w-full h-32 flex items-center justify-center">
                     <img
-                      src={URL.createObjectURL(formData.businessImage)}
+                      src={imageURL}
                       alt="Preview"
                       className="max-h-full max-w-full object-contain"
                     />
@@ -330,9 +367,12 @@ const VendorForm = () => {
                   </>
                 )}
               </div>
+              {isUploading && (
+                <p className="mt-2 text-xs text-blue-400">Uploading...</p>
+              )}
             </div>
 
-            {/* ✅ FIXED: Item Prices - Responsive Grid */}
+            {/* Item Prices */}
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-1">
                 Item Prices (e.g., Amala 1200, Ewedu 500, Rice 4000)

@@ -7,11 +7,11 @@ import FeaturedBanner from "../components/FeaturedBanner";
 import Directory from "../components/Directory";
 import VendorForm from "../components/VendorForm";
 import FAQ from "../components/FAQ";
-import Footer from "../components/Footer"
+import Footer from "../components/Footer";
 
 export default function HomePage() {
   return (
-    <section className="" >
+    <section className="">
       <Header />
       <Hero />
       <PriceInsightsDashboard />
