@@ -118,7 +118,7 @@ const Header = () => {
             <div className="p-5 border-b flex justify-between items-center">
               <a href="#" onClick={closeMenu}>
                 <img
-                  src="/public/Logos/logo6.png"
+                  src="./public/Logos/logo6.png"
                   alt="Ajani Logo"
                   className="h-8 w-24"
                 />
