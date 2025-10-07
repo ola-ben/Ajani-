@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Logo from "../assets/Logos/logo6.png"
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,7 +28,7 @@ const Header = () => {
             <div className="flex items-center gap-3">
               <a href="#" onClick={closeMenu}>
                 <img
-                  src="/public/Logos/logo6.png"
+                  src={Logo}
                   alt="Ajani Logo"
                   className="h-8 w-24"
                 />
@@ -118,7 +119,7 @@ const Header = () => {
             <div className="p-5 border-b flex justify-between items-center">
               <a href="#" onClick={closeMenu}>
                 <img
-                  src="/Logos/logo6.png"
+                  src={Logo}
                   alt="Ajani Logo"
                   className="h-8 w-24"
                 />

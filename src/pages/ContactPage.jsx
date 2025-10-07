@@ -21,16 +21,44 @@ const ContactPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Message sent! We’ll get back to you within 24–48 hours.");
-    setFormData({
-      fullName: "",
-      email: "",
-      phone: "",
-      country: "",
-      message: "",
-    });
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = "Sending...";
+    submitBtn.disabled = true;
+
+    try {
+      // 🔴 REPLACE WITH YOUR GOOGLE APPS SCRIPT URL
+      const response = await fetch(
+        "https://script.google.com/macros/s/YOUR_DEPLOYMENT_URL/exec",
+        {
+          method: "POST",
+          mode: "no-cors", // Required for Google Apps Script
+          headers: {
+            "Content-Type": "text/plain", // Must be text/plain for no-cors
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      // Because of no-cors, we can't read response — but if no error, assume success
+      alert("✅ Message sent! We’ll get back to you within 24–48 hours.");
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        country: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Submission failed:", error);
+      alert("❌ Failed to send. Please try again or contact us on WhatsApp.");
+    } finally {
+      submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
+    }
   };
 
   return (
@@ -40,7 +68,7 @@ const ContactPage = () => {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-blue-900">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-[#101828]">
               Contact Us
             </h1>
             <p className="mt-3 text-lg text-blue-500 max-w-3xl mx-auto">

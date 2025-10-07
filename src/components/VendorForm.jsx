@@ -35,11 +35,11 @@ const VendorForm = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const validTypes = ["image/png", "image/jpeg", "image/jpg"];
+    const validTypes = ["image/png", "image/jpeg"];
     const maxSize = 5 * 1024 * 1024; // 5MB
 
     if (!validTypes.includes(file.type)) {
-      alert("Only PNG, JPG, JPEG files are allowed.");
+      alert("Only PNG and JPG files are allowed.");
       return;
     }
 
@@ -52,11 +52,11 @@ const VendorForm = () => {
 
     const formDataCloud = new FormData();
     formDataCloud.append("file", file);
-    formDataCloud.append("upload_preset", "ajani_upload"); // Your preset name
+    formDataCloud.append("upload_preset", "ajani_upload");
 
     try {
       const response = await fetch(
-        "https://api.cloudinary.com/v1_1/debpabo0a/image/upload", // 🔴 REPLACE YOUR_CLOUD_NAME
+        "https://api.cloudinary.com/v1_1/debpabo0a/image/upload",
         {
           method: "POST",
           body: formDataCloud,
@@ -64,21 +64,23 @@ const VendorForm = () => {
       );
 
       const data = await response.json();
+      console.log("Cloudinary Response:", data);
 
       if (data.secure_url) {
         setImageURL(data.secure_url);
         setFormData((prev) => ({ ...prev, businessImage: data.secure_url }));
       } else {
-        throw new Error("Upload failed");
+        throw new Error(
+          `Upload failed: ${data.error?.message || "Unknown error"}`
+        );
       }
     } catch (error) {
       console.error("Image upload failed:", error);
-      alert("Failed to upload image. Please try again.");
+      alert(`❌ Failed to upload image: ${error.message}`);
     } finally {
       setIsUploading(false);
     }
   };
-
   const handleRemoveImage = () => {
     setImageURL("");
     setFormData((prev) => ({ ...prev, businessImage: null }));

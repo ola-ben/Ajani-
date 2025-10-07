@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
-
+import Logo from "../assets/Logos/logo8.png";
 
 const Hero = () => {
   useEffect(() => {
@@ -20,7 +20,7 @@ const Hero = () => {
               rel="noopener noreferrer"
             >
               <img
-                src="/public/Logos/logo8.png"
+                src={Logo}
                 alt="Ajani - Your Ibadan Guide"
                 className="w-full h-full object-contain"
               />

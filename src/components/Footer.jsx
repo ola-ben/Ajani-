@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Logo from "../assets/Logos/logo6.png";
 
 const Footer = () => {
   const year = new Date().getFullYear();
@@ -12,11 +13,7 @@ const Footer = () => {
           {/* Left: Logo, Tagline & Summary */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <img
-                src="/public/Logos/logo6.png"
-                alt="Ajani Logo"
-                className="h-8 w-auto"
-              />
+              <img src={Logo} alt="Ajani Logo" className="h-8 w-auto" />
               <span className="text-slate-300 text-sm md:text-base">
                 • Ibadan Price Insights
               </span>
