@@ -20,7 +20,7 @@ const Header = () => {
   return (
     <>
       {/* Fixed Header - always visible */}
-      <header className="fixed top-0 left-0 right-0 z-50   backdrop-blur-sm border-b bg-gray-900 border-gray-700 font-rubik shadow-sm">
+      <header className="fixed top-0 left-0 right-0 z-50   backdrop-blur-sm border-b bg-gray-800 border-gray-700 font-rubik shadow-sm">
         <div className="max-w-7xl mx-auto px-5 py-3">
           <nav className="flex items-center justify-between mt-3">
             {/* Logo */}
