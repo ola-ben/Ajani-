@@ -3,7 +3,7 @@ import React from "react";
 const Hero = () => {
   return (
     <>
-      <section id="hero" className="bg-gray-900 h-lvh">
+      <section id="hero" className="bg-gray-900 lg:h-lvh">
         <div
           // ✅ Fixed: removed trailing space
           className="max-w-4xl mx-auto px-5 py-20  text-center font-rubik "
