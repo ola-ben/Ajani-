@@ -154,7 +154,7 @@ const FeaturedBanner = () => {
   ];
 
   return (
-    <section className="py-16 bg-gray-700 text-white font-rubik">
+    <section className="py-16 bg-gray-900 text-white font-rubik">
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-left mb-8">
           <h2 className="text-2xl font-bold mb-2">Featured Businesses</h2>
