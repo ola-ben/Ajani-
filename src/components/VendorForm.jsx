@@ -75,12 +75,50 @@ const VendorForm = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    alert(
-      "✅ Form submitted! We’ll review and add you to our catalog within 24 hours."
-    );
+
+    // Show loading state (optional)
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = "Submitting...";
+    submitBtn.disabled = true;
+
+    try {
+      const response = await fetch(
+        "https://script.google.com/macros/s/AKfycbxKgc-mo5mWjrXQgY8_sEHDRDtHASPSdSq0wvu8_8dgcTX6DRvIzb_EAaq7mCcbki1r/exec",
+        {
+          method: "POST",
+          mode: "no-cors", // Required for Google Apps Script
+          headers: {
+            "Content-Type": "text/plain", // Must be text/plain for no-cors
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      // Because of no-cors, we can't read response, but if no error → assume success
+      alert(
+        "✅ Form submitted! We’ll review and add you to our catalog within 24 hours."
+      );
+      setFormData({
+        businessName: "",
+        category: "",
+        area: "",
+        startingPrice: "",
+        whatsapp: "",
+        address: "",
+        shortDescription: "",
+        itemPrices: [{ itemName: "", price: "" }],
+        businessImage: null,
+      });
+    } catch (error) {
+      console.error("Submission failed:", error);
+      alert("❌ Failed to submit. Please try again or contact us on WhatsApp.");
+    } finally {
+      submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
+    }
   };
 
   return (
