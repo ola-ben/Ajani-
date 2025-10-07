@@ -11,7 +11,7 @@ const FeaturedBanner = () => {
       description:
         "Get featured in area searches — reach local buyers actively looking for your services.",
       button: "Learn More",
-      color: "bg-blue-50",
+      color: "bg-[#3276ee]",
       buttonColor: "bg-blue-600 hover:bg-blue-700",
       image:
         "https://media.istockphoto.com/id/2207324198/photo/buffet-style-serving-in-chafing-dish.jpg?s=1024x1024&w=is&k=20&c=ORtP-Vc-AmtBXMme8v3pjULWpZ8FcAugXuPbOFtO_Tc=",
@@ -57,7 +57,7 @@ const FeaturedBanner = () => {
       description:
         "Experience the best of Ibadan cuisine this weekend at Agodi Gardens. 20+ vendors.",
       button: "Get Details",
-      color: "bg-green-50",
+      color: "bg-[#05f2c1]",
       buttonColor: "bg-green-600 hover:bg-green-700",
       image:
         "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
@@ -169,7 +169,7 @@ const FeaturedBanner = () => {
               className={`relative rounded-lg shadow-lg p-6 cursor-pointer transition-transform hover:-translate-y-1 ${ad.color}`}
               onClick={() => setShowModal(ad.id)}
             >
-              <div className="flex items-start mb-4">
+              <div className="flex items-start mb-4 ">
                 <div className="text-xs font-medium text-gray-500">
                   {ad.title}
                 </div>

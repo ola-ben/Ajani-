@@ -84,7 +84,7 @@ const PriceInsightsDashboard = () => {
     ],
   };
 
-  const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"];
+  const COLORS = ["#101828", "#05f2c1", "#3276ee", "#1ab9d6"];
 
   // Simulate price index and alerts
   const priceIndex = 12450;
@@ -111,7 +111,10 @@ const PriceInsightsDashboard = () => {
   };
 
   return (
-    <div className="bg-gray-50 p-6 rounded-lg shadow-md font-rubik" id="priceinsight">
+    <div
+      className="bg-gray-50 p-6 rounded-lg shadow-md font-rubik"
+      id="priceinsight"
+    >
       {/* Header */}
       <h2 className="text-2xl font-bold text-gray-800 mb-4">
         Price Insights Dashboard
@@ -183,7 +186,7 @@ const PriceInsightsDashboard = () => {
             <span className="bg-blue-100 p-2 rounded-full">
               <FontAwesomeIcon
                 icon={faMapMarkerAlt}
-                className="text-blue-600"
+                className="text-[#1ab9d6]"
               />
             </span>
           </div>
@@ -221,7 +224,7 @@ const PriceInsightsDashboard = () => {
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-semibold text-gray-800">Price Trends</h3>
             <span className="bg-blue-100 p-2 rounded-full">
-              <FontAwesomeIcon icon={faChartLine} className="text-blue-600" />
+              <FontAwesomeIcon icon={faChartLine} className="text-[#1ab9d6]" />
             </span>
           </div>
           <ResponsiveContainer width="100%" height={250}>
@@ -247,7 +250,7 @@ const PriceInsightsDashboard = () => {
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-semibold text-gray-800">Category Comparison</h3>
             <span className="bg-blue-100 p-2 rounded-full">
-              <FontAwesomeIcon icon={faLayerGroup} className="text-blue-600" />
+              <FontAwesomeIcon icon={faLayerGroup} className="text-[#1ab9d6]" />
             </span>
           </div>
           <ResponsiveContainer width="100%" height={250}>
