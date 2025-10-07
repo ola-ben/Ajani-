@@ -2,10 +2,10 @@ import React from "react";
 
 import { BrowserRouter, Routes, Route } from "react-router";
 
-import HomePage from "./assets/pages/HomePage";
-import PrivacyPage from "./assets/pages/PrivacyPage";
-import TermsPage from "./assets/pages/TermsPage";
-import ContactPage from "./assets/pages/ContactPage";
+import HomePage from "./pages/HomePage";
+import PrivacyPage from "./pages/PrivacyPage";
+import TermsPage from "./pages/TermsPage";
+import ContactPage from "./pages/ContactPage";
 
 function App() {
   return (

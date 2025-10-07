@@ -27,7 +27,7 @@ const Header = () => {
             <div className="flex items-center gap-3">
               <a href="#" onClick={closeMenu}>
                 <img
-                  src="/logos/logo6.png"
+                  src="/src/assets/Logos/logo6.png"
                   alt="Ajani Logo"
                   className="h-8 w-24"
                 />
@@ -118,7 +118,7 @@ const Header = () => {
             <div className="p-5 border-b flex justify-between items-center">
               <a href="#" onClick={closeMenu}>
                 <img
-                  src="/logos/logo6.png"
+                  src="/src/assets/Logos/logo6.png"
                   alt="Ajani Logo"
                   className="h-8 w-24"
                 />

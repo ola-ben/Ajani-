@@ -1,5 +1,5 @@
-import WorkInProgressBanner from "../../components/WorkInProgressBanner";
-import Header from "../../components/Header";
+import WorkInProgressBanner from "../components/WorkInProgressBanner";
+import Header from "../components/Header";
 
 export default function TermsPage() {
   return (

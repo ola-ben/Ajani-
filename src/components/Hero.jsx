@@ -1,6 +1,10 @@
 import React from "react";
+import { useEffect } from "react";
 
 const Hero = () => {
+   useEffect(() => {
+     window.scrollTo(0, 0);
+   }, []);
   return (
     <>
       <section id="hero" className="bg-gray-900 lg:h-lvh md:h-lvh h-[800px]">
@@ -15,7 +19,7 @@ const Hero = () => {
               rel="noopener noreferrer"
             >
               <img
-                src="/logos/logo8.png"
+                src="/src/assets/Logos/logo8.png"
                 alt="Ajani - Your Ibadan Guide"
                 className="w-full h-full object-contain"
               />
