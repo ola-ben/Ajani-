@@ -8,7 +8,7 @@ const Hero = () => {
           // ✅ Fixed: removed trailing space
           className="max-w-4xl mx-auto px-5 py-20  text-center font-rubik "
         >
-          <div className="w-24 h-24 flex items-center justify-center mx-auto mb-6">
+          <div className="w-24 h-24 flex items-center justify-center mx-auto mb-12">
             <a
               href="https://wa.me/2348123456789?text=Hi%20Ajani%20👋"
               target="_blank"
@@ -22,11 +22,11 @@ const Hero = () => {
             </a>
           </div>
 
-          <h1 className="text-4xl md:text-5xl text-[#fff] font-extrabold mb-4">
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 gradient-text">
             Hi, I'm Ajani — Your Ibadan Guide
           </h1>
 
-          <p className=":lg:text-lg text-[15px] md:text-xl leading-[1.5] text-slate-300 mb-8 s">
+          <p className=":lg:text-lg text-[15px] md:text-xl leading-[1.5] text-slate-400 mb-10">
             Ask me anything: Where's the cheapest amala in Bodija? Best hotels
             under ₦10,000? Weekend events happening now?
           </p>

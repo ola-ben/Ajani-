@@ -12,6 +12,14 @@
   /* --font-dmsans: "DM Sans", sans-serif; */
 }
 
+.gradient-text {
+  background: linear-gradient(to right, #101828, #05f2c1, #3276ee, #1ab9d6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
 /* body {
   @apply font-poppins;
 } */

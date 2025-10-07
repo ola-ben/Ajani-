@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router";
 
 const Footer = () => {
+  const navigate = useNavigate();
   const year = new Date().getFullYear();
 
   return (
@@ -9,15 +11,24 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div>© {year} Ajani • Ibadan Price Insights</div>
           <div className="flex gap-4">
-            <a href="#" className="hover:text-blue-600">
+            <p
+              className="hover:text-blue-600"
+              onClick={() => navigate("/privacypage")}
+            >
               Privacy
-            </a>
-            <a href="#" className="hover:text-blue-600">
+            </p>
+            <p
+              className="hover:text-blue-600"
+              onClick={() => navigate("/termspage")}
+            >
               Terms
-            </a>
-            <a href="#" className="hover:text-blue-600">
+            </p>
+            <p
+              className="hover:text-blue-600"
+              onClick={() => navigate("/contactpage")}
+            >
               Contact
-            </a>
+            </p>
           </div>
           <a
             href="https://wa.me/2348123456789?text=Hi%20Ajani%20👋"

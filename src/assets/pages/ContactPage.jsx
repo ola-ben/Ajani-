@@ -1,9 +1,11 @@
-import React from "react";
+import Header from "../../components/Header";
+import WorkInProgressBanner from "../../components/WorkInProgressBanner";
 
-export default function contact() {
+export default function ContactPage() {
   return (
-    <div>
-      <h1>contact us</h1>
+    <div className="mx-auto px-5">
+      <Header />
+      <WorkInProgressBanner />
     </div>
   );
 }
