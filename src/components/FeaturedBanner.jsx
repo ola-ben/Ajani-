@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const FeaturedBanner = () => {
   const [showModal, setShowModal] = useState(null);
@@ -11,12 +12,12 @@ const FeaturedBanner = () => {
       description:
         "Get featured in area searches — reach local buyers actively looking for your services.",
       button: "Learn More",
-      color: "bg-[#3276ee]",
+      bgColor: "bg-blue-50",
       buttonColor: "bg-blue-600 hover:bg-blue-700",
       image:
         "https://media.istockphoto.com/id/2207324198/photo/buffet-style-serving-in-chafing-dish.jpg?s=1024x1024&w=is&k=20&c=ORtP-Vc-AmtBXMme8v3pjULWpZ8FcAugXuPbOFtO_Tc=",
       adContent: (
-        <div className="text-center">
+        <div className="text-center font-rubik">
           <img
             src="https://media.istockphoto.com/id/2207324198/photo/buffet-style-serving-in-chafing-dish.jpg?s=1024x1024&w=is&k=20&c=ORtP-Vc-AmtBXMme8v3pjULWpZ8FcAugXuPbOFtO_Tc="
             alt="Amala Skye"
@@ -29,7 +30,7 @@ const FeaturedBanner = () => {
             Authentic amala with assorted meats, fresh efo, and hot pepper
             sauce. Open 7AM–9PM daily.
           </p>
-          <div className="mt-4 flex justify-center space-x-4 text-sm">
+          <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm">
             <span className="bg-green-100 px-2 py-1 rounded-full">₦1,200</span>
             <span className="bg-yellow-100 px-2 py-1 rounded-full">⭐ 4.8</span>
             <span className="bg-red-100 px-2 py-1 rounded-full">Bodija</span>
@@ -57,12 +58,12 @@ const FeaturedBanner = () => {
       description:
         "Experience the best of Ibadan cuisine this weekend at Agodi Gardens. 20+ vendors.",
       button: "Get Details",
-      color: "bg-[#05f2c1]",
+      bgColor: "bg-green-50",
       buttonColor: "bg-green-600 hover:bg-green-700",
       image:
         "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
       adContent: (
-        <div className="text-center">
+        <div className="text-center font-rubik">
           <img
             src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
             alt="Food Festival"
@@ -75,7 +76,7 @@ const FeaturedBanner = () => {
             20+ vendors, live music, kids zone, and free parking. Don’t miss
             out!
           </p>
-          <div className="mt-4 flex justify-center space-x-4 text-sm">
+          <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm">
             <span className="bg-blue-100 px-2 py-1 rounded-full">
               ₦1,000 Entry
             </span>
@@ -109,12 +110,12 @@ const FeaturedBanner = () => {
       description:
         "Fresh produce, spices, and local delicacies. Open daily from 8AM to 6PM.",
       button: "Contact",
-      color: "bg-yellow-50",
+      bgColor: "bg-yellow-50",
       buttonColor: "bg-yellow-600 hover:bg-yellow-700",
       image:
         "https://images.unsplash.com/photo-1694825588875-190db201a997?q=80&w=1630&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       adContent: (
-        <div className="text-center">
+        <div className="text-center font-rubik">
           <img
             src="https://images.unsplash.com/photo-1694825588875-190db201a997?q=80&w=1630&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Dugbe Market"
@@ -127,7 +128,7 @@ const FeaturedBanner = () => {
             Get the freshest ingredients for your kitchen — yam, pepper, ogbono,
             and more. Bargain like a pro!
           </p>
-          <div className="mt-4 flex justify-center space-x-4 text-sm">
+          <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm">
             <span className="bg-red-100 px-2 py-1 rounded-full">₦500/kg</span>
             <span className="bg-indigo-100 px-2 py-1 rounded-full">Dugbe</span>
             <span className="bg-teal-100 px-2 py-1 rounded-full">
@@ -153,7 +154,7 @@ const FeaturedBanner = () => {
   ];
 
   return (
-    <section className="py-16 bg-gray-900 text-white">
+    <section className="py-16 bg-gray-900 text-white font-rubik">
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-left mb-8">
           <h2 className="text-2xl font-bold mb-2">Featured Businesses</h2>
@@ -166,20 +167,29 @@ const FeaturedBanner = () => {
           {ads.map((ad) => (
             <div
               key={ad.id}
-              className={`relative rounded-lg shadow-lg p-6 cursor-pointer transition-transform hover:-translate-y-1 ${ad.color}`}
+              className={`relative rounded-lg shadow-lg p-6 cursor-pointer transition-transform hover:-translate-y-1 ${ad.bgColor}`}
               onClick={() => setShowModal(ad.id)}
+              role="button"
+              tabIndex={0}
+              onKeyPress={(e) => {
+                if (e.key === "Enter" || e.key === " ") setShowModal(ad.id);
+              }}
+              aria-label={`View details for ${ad.subtitle}`}
             >
-              <div className="flex items-start mb-4 ">
-                <div className="text-xs font-medium text-gray-500">
-                  {ad.title}
-                </div>
+              <div className="text-xs font-medium text-gray-500 mb-2">
+                {ad.title}
               </div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">
                 {ad.subtitle}
               </h3>
               <p className="text-sm text-gray-600 mb-4">{ad.description}</p>
               <button
-                className={`px-4 py-2 rounded-lg font-semibold transition ${ad.buttonColor} text-white`}
+                className={`px-4 py-2 rounded-lg font-semibold text-white transition ${ad.buttonColor}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowModal(ad.id);
+                }}
+                aria-label={`Learn more about ${ad.subtitle}`}
               >
                 {ad.button}
               </button>
@@ -188,59 +198,51 @@ const FeaturedBanner = () => {
         </div>
       </div>
 
-      {/* Modal */}
-      {showModal && (
-        <div
-          className="flex items-center justify-center  bg-opacity-50 p-4 fixed inset-0 z-50 bg-white bg-opacity-70"
-          onClick={() => setShowModal(null)} // Close on click outside
-        >
-          <div
-            className={`relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-lg shadow-xl p-6 text-center animate-fadeIn ${
-              showModal === "sponsored"
-                ? "bg-blue-50"
-                : showModal === "weekend-special"
-                ? "bg-green-50"
-                : "bg-yellow-50"
-            }`}
-            onClick={(e) => e.stopPropagation()} // Prevent close when clicking inside
+      {/* Modal with Framer Motion */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+            onClick={() => setShowModal(null)}
           >
-            <button
-              onClick={() => setShowModal(null)}
-              className="absolute top-3 right-3 text-gray-600 hover:text-gray-800 text-xl"
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className={`relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-lg shadow-xl p-6 text-center ${
+                ads.find((a) => a.id === showModal)?.bgColor || "bg-white"
+              }`}
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={`modal-title-${showModal}`}
             >
-              ×
-            </button>
-
-            {ads.find((a) => a.id === showModal)?.adContent}
-
-            <div className="mt-6">
               <button
                 onClick={() => setShowModal(null)}
-                className="px-4 py-2 rounded-lg font-semibold bg-gray-600 hover:bg-gray-700 text-white"
+                className="absolute top-3 right-3 text-gray-600 hover:text-gray-800 text-xl font-bold"
+                aria-label="Close modal"
               >
-                Close
+                &times;
               </button>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Animation */}
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
-        }
-      `}</style>
+              {ads.find((a) => a.id === showModal)?.adContent}
+
+              <div className="mt-6">
+                <button
+                  onClick={() => setShowModal(null)}
+                  className="px-4 py-2 rounded-lg font-semibold bg-gray-600 hover:bg-gray-700 text-white"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

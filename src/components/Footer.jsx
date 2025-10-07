@@ -15,7 +15,7 @@ const Footer = () => {
               className="hover:text-blue-600"
               onClick={() => navigate("/privacypage")}
             >
-              Privacy
+              Privacy Policy
             </p>
             <p
               className="hover:text-blue-600"
