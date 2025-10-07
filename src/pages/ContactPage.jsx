@@ -71,7 +71,7 @@ const ContactPage = () => {
             <h1 className="text-3xl md:text-4xl font-extrabold text-[#101828]">
               Contact Us
             </h1>
-            <p className="mt-3 text-lg text-blue-500 max-w-3xl mx-auto">
+            <p className="mt-3 text-lg text-gray-500 max-w-3xl mx-auto">
               We would love to hear from you! Whether you have questions,
               feedback, or just want to say hello, feel free to reach out.
             </p>
@@ -80,7 +80,7 @@ const ContactPage = () => {
           {/* Form + Info Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Contact Form */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-green-300">
+            <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-gray-300">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -212,7 +212,7 @@ const ContactPage = () => {
                       7, Oluyoro Street, off Awolowo Avenue, Old Bodija, Ibadan
                     </span>
                   </p>
-                  <p className="text-green-600 font-medium mt-4">
+                  <p className="text-blue-600 font-medium mt-4">
                     We’ll get back to you within 24–48 hours.
                   </p>
                 </div>
