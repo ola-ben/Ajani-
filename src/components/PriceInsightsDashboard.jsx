@@ -116,7 +116,7 @@ const PriceInsightsDashboard = () => {
       id="priceinsight"
     >
       {/* Header */}
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">
+      <h2 className="text-2xl font-bold text-[#101828] mb-4">
         Price Insights Dashboard
       </h2>
 
@@ -141,7 +141,7 @@ const PriceInsightsDashboard = () => {
         </div>
 
         <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium  mb-1 text-[#101828]">
             Category
           </label>
           <select
@@ -158,7 +158,7 @@ const PriceInsightsDashboard = () => {
         </div>
 
         <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-[#101828] mb-1">
             Price Range (₦)
           </label>
           <input
@@ -180,7 +180,7 @@ const PriceInsightsDashboard = () => {
         {/* Average Prices by Area */}
         <div className="bg-white p-4 rounded-lg shadow">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-gray-800">
+            <h3 className="font-semibold text-[#101828]">
               Average Prices by Area
             </h3>
             <span className="bg-blue-100 p-2 rounded-full">
@@ -222,7 +222,7 @@ const PriceInsightsDashboard = () => {
         {/* Price Trends */}
         <div className="bg-white p-4 rounded-lg shadow">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-gray-800">Price Trends</h3>
+            <h3 className="font-semibold text-[#101828]">Price Trends</h3>
             <span className="bg-blue-100 p-2 rounded-full">
               <FontAwesomeIcon icon={faChartLine} className="text-[#1ab9d6]" />
             </span>
@@ -248,7 +248,9 @@ const PriceInsightsDashboard = () => {
         {/* Category Comparison */}
         <div className="bg-white p-4 rounded-lg shadow">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-gray-800">Category Comparison</h3>
+            <h3 className="font-semibold text-[#101828]">
+              Category Comparison
+            </h3>
             <span className="bg-blue-100 p-2 rounded-full">
               <FontAwesomeIcon icon={faLayerGroup} className="text-[#1ab9d6]" />
             </span>
@@ -291,7 +293,7 @@ const PriceInsightsDashboard = () => {
         {/* Price Index Card */}
         <div className="bg-white p-4 rounded-lg shadow flex items-start justify-between">
           <div>
-            <h4 className="text-sm font-medium text-gray-600">Price Index</h4>
+            <h4 className="text-sm font-medium text-[#101828]">Price Index</h4>
             <div className="text-2xl font-bold text-gray-800">
               ₦{priceIndex.toLocaleString()}
             </div>
@@ -311,7 +313,7 @@ const PriceInsightsDashboard = () => {
         {/* Most Affordable Area Card */}
         <div className="bg-white p-4 rounded-lg shadow flex items-start justify-between">
           <div>
-            <h4 className="text-sm font-medium text-gray-600">
+            <h4 className="text-sm font-medium text-[#101828]">
               Most Affordable Area
             </h4>
             <div className="text-2xl font-bold text-gray-800">
@@ -321,7 +323,7 @@ const PriceInsightsDashboard = () => {
               <FontAwesomeIcon icon={faArrowDown} className="mr-1" />{" "}
               {affordableAreaDiscount}
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[#101828] mt-1">
               Best value for food and transportation
             </p>
           </div>
@@ -333,7 +335,7 @@ const PriceInsightsDashboard = () => {
         {/* Price Alert Card */}
         <div className="bg-white p-4 rounded-lg shadow flex items-start justify-between">
           <div>
-            <h4 className="text-sm font-medium text-gray-600">Price Alert</h4>
+            <h4 className="text-sm font-medium text-[#101828]">Price Alert</h4>
             <div className="text-2xl font-bold text-gray-800">
               {priceAlertArea}
             </div>
@@ -341,7 +343,7 @@ const PriceInsightsDashboard = () => {
               <FontAwesomeIcon icon={faArrowUp} className="mr-1" />{" "}
               {priceAlertChange}
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[#101828] mt-1">
               Accommodation prices rising this month
             </p>
           </div>
