@@ -12,6 +12,16 @@
   /* --font-dmsans: "DM Sans", sans-serif; */
 }
 
+/* In your CSS or Tailwind config */
+.wip-banner {
+  background: linear-gradient(90deg, #101828 0%, #05f2c1 50%, #3276ee 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
+}
+
 .gradient-text {
   background: linear-gradient(to right, #101828, #05f2c1, #3276ee, #1ab9d6);
   -webkit-background-clip: text;
