@@ -10,17 +10,17 @@ import {
   PieChart,
   Pie,
   Cell,
+  Legend,
 } from "recharts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMapMarkerAlt,
-  faStar,
-  faTag,
   faArrowUp,
   faArrowDown,
+  faLayerGroup,
 } from "@fortawesome/free-solid-svg-icons";
 
-// Custom Hook: Fetch Data from Google Sheet
+// ✅ Custom Hook: Fetch Data from Google Sheet
 const useGoogleSheet = (sheetId, apiKey) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +49,8 @@ const useGoogleSheet = (sheetId, apiKey) => {
           setData(formatted);
         }
       } catch (err) {
-        setError("Failed to load data");
+        console.error("Fetch error:", err);
+        setError("Failed to load data. Check console for details.");
       } finally {
         setLoading(false);
       }
@@ -67,24 +68,20 @@ const Dashboard = () => {
 
   const { data: vendors, loading, error } = useGoogleSheet(SHEET_ID, API_KEY);
 
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Accommodation");
   const [selectedArea, setSelectedArea] = useState("");
-  const [maxPrice, setMaxPrice] = useState(20000);
-  const [tags, setTags] = useState("");
+  const [activeBarIndex, setActiveBarIndex] = useState(null);
 
-  // Filter vendors
+  // Filter vendors by category
   const filteredVendors = vendors.filter((vendor) => {
     const matchesCategory =
-      !selectedCategory || vendor.category === selectedCategory;
+      selectedCategory === "All" || vendor.category === selectedCategory;
     const matchesArea = !selectedArea || vendor.area === selectedArea;
-    const matchesPrice = parseFloat(vendor.price_from) <= maxPrice;
-    const matchesTags =
-      !tags || vendor.short_desc.toLowerCase().includes(tags.toLowerCase());
-    return matchesCategory && matchesArea && matchesPrice && matchesTags;
+    return matchesCategory && matchesArea;
   });
 
   // === CHART DATA ===
-  const averagePricesByArea = vendors.reduce((acc, vendor) => {
+  const averagePricesByArea = filteredVendors.reduce((acc, vendor) => {
     const area = vendor.area;
     const price = parseFloat(vendor.price_from) || 0;
     if (!acc[area]) acc[area] = { total: 0, count: 0 };
@@ -104,42 +101,75 @@ const Dashboard = () => {
     (a, b) => a.price - b.price
   );
 
-  const priceIndex = Math.round(
-    vendors.reduce((sum, v) => sum + (parseFloat(v.price_from) || 0), 0) /
-      vendors.length
-  );
+  const priceIndex = avgPricesArray.length
+    ? Math.round(
+        avgPricesArray.reduce((sum, item) => sum + item.price, 0) /
+          avgPricesArray.length
+      )
+    : 0;
 
-  const affordableArea = avgPricesArray.reduce(
-    (min, area) => (area.price < min.price ? area : min),
-    avgPricesArray[0]
-  );
+  // ✅ Safe fallbacks
+  const affordableArea =
+    avgPricesArray.length > 0
+      ? avgPricesArray.reduce(
+          (min, area) => (area.price < min.price ? area : min),
+          avgPricesArray[0]
+        )
+      : { area: "—", price: 0 };
 
-  const alertArea = avgPricesArray.reduce(
-    (max, area) => (area.price > max.price ? area : max),
-    avgPricesArray[0]
-  );
+  const alertArea =
+    avgPricesArray.length > 0
+      ? avgPricesArray.reduce(
+          (max, area) => (area.price > max.price ? area : max),
+          avgPricesArray[0]
+        )
+      : { area: "—", price: 0 };
 
-  const categoryComparisonData = {
-    "All Categories": [
-      { name: "Food & Dining", value: 0 },
-      { name: "Accommodation", value: 0 },
-      { name: "Transportation", value: 0 },
-      { name: "Shopping", value: 0 },
-    ],
-  };
+  // Category Comparison Data (by price)
+  const categoryComparisonData = [
+    {
+      name: "Accommodation",
+      value: 0,
+    },
+    {
+      name: "Transportation",
+      value: 0,
+    },
+    {
+      name: "Weekend Event",
+      value: 0,
+    },
+  ];
 
-  vendors.forEach((vendor) => {
+  filteredVendors.forEach((vendor) => {
     const cat = vendor.category;
     const price = parseFloat(vendor.price_from) || 0;
-    if (categoryComparisonData["All Categories"]) {
-      const catItem = categoryComparisonData["All Categories"].find(
-        (c) => c.name === cat
-      );
-      if (catItem) catItem.value += price;
+
+    if (cat === "accommodation.hotel") {
+      categoryComparisonData[0].value += price;
+    } else if (cat === "transport.ridehail") {
+      categoryComparisonData[1].value += price;
+    } else if (cat === "event.weekend") {
+      categoryComparisonData[2].value += price;
     }
   });
 
-  const COLORS = ["#101828", "#05f2c1", "#3276ee", "#1ab9d6"];
+  const COLORS = ["#101828", "#05f2c1", "#3276ee"];
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      window.location.reload(); // Simple reload — you can replace with refetch logic later
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Handle bar click
+  const handleBarClick = (data, index) => {
+    setActiveBarIndex(index);
+    setSelectedArea(data.area);
+  };
 
   if (loading) {
     return (
@@ -163,9 +193,7 @@ const Dashboard = () => {
   return (
     <div className="bg-gray-900 text-white p-6 min-h-screen font-rubik">
       {/* Header */}
-      <h1 className="text-2xl font-bold mb-6">
-        Ajani — Ibadan Guide (Web Dashboard)
-      </h1>
+      <h1 className="text-2xl font-bold mb-6">Ajani — Ibadan Price Insights</h1>
 
       {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -174,12 +202,10 @@ const Dashboard = () => {
           onChange={(e) => setSelectedCategory(e.target.value)}
           className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">Category: All</option>
-          {Array.from(new Set(vendors.map((v) => v.category))).map((cat) => (
-            <option key={cat} value={cat}>
-              Category: {cat}
-            </option>
-          ))}
+          <option value="All">All Categories</option>
+          <option value="accommodation.hotel">Accommodation</option>
+          <option value="transport.ridehail">Transportation</option>
+          <option value="event.weekend">Weekend Event</option>
         </select>
 
         <input
@@ -187,22 +213,6 @@ const Dashboard = () => {
           value={selectedArea}
           onChange={(e) => setSelectedArea(e.target.value)}
           placeholder="Area: Bodija"
-          className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500"
-        />
-
-        <input
-          type="number"
-          value={maxPrice}
-          onChange={(e) => setMaxPrice(Number(e.target.value))}
-          placeholder="Max price: ₦2000"
-          className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500"
-        />
-
-        <input
-          type="text"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-          placeholder="Tags: amala"
           className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -252,92 +262,79 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Bar Chart */}
         <div className="bg-gray-800 p-4 rounded-lg shadow border border-gray-700">
-          <h3 className="font-semibold mb-4">Avg Prices by Area</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-semibold">Average Prices by Area</h3>
+            <span className="bg-blue-100 p-2 rounded-full">
+              <FontAwesomeIcon
+                icon={faMapMarkerAlt}
+                className="text-[#1ab9d6]"
+              />
+            </span>
+          </div>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={sortedAvgPricesArray}>
               <CartesianGrid strokeDasharray="3 3" stroke="#444" />
               <XAxis dataKey="area" stroke="#aaa" />
               <YAxis stroke="#aaa" tickFormatter={(v) => `₦${v}`} />
               <Tooltip formatter={(v) => [`₦${v.toLocaleString()}`, "Price"]} />
-              <Bar dataKey="price" fill="#05f2c1" />
+              <Bar
+                dataKey="price"
+                onClick={handleBarClick}
+                activeBar={
+                  <rect
+                    fill="#10b981"
+                    stroke="#000"
+                    strokeWidth={2}
+                    filter="url(#shadow)"
+                  />
+                }
+                style={{ cursor: "pointer" }}
+              >
+                {sortedAvgPricesArray.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* Pie Chart */}
         <div className="bg-gray-800 p-4 rounded-lg shadow border border-gray-700">
-          <h3 className="font-semibold mb-4">Category Comparison</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-semibold">Category Comparison</h3>
+            <span className="bg-blue-100 p-2 rounded-full">
+              <FontAwesomeIcon icon={faLayerGroup} className="text-[#1ab9d6]" />
+            </span>
+          </div>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
-                data={categoryComparisonData["All Categories"]}
+                data={categoryComparisonData}
                 cx="50%"
                 cy="50%"
+                innerRadius={60}
                 outerRadius={80}
-                fill="#8884d8"
+                paddingAngle={5}
                 dataKey="value"
                 label={({ name, value }) =>
                   `${name}: ₦${value.toLocaleString()}`
                 }
               >
-                {categoryComparisonData["All Categories"].map(
-                  (entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  )
-                )}
+                {categoryComparisonData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
               </Pie>
-              <Tooltip formatter={(v) => [`₦${v.toLocaleString()}`, "Total"]} />
+              <Tooltip formatter={(v) => `₦${v.toLocaleString()}`} />
+              <Legend />
             </PieChart>
           </ResponsiveContainer>
         </div>
-      </div>
-
-      {/* === VENDOR CARDS === */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {filteredVendors.map((vendor, index) => (
-          <div
-            key={index}
-            className="bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-700"
-          >
-            <div className="mb-4">
-              <img
-                src={vendor.image_url || "https://via.placeholder.com/300"}
-                alt={vendor.name}
-                className="w-full h-32 object-cover rounded-lg"
-              />
-            </div>
-
-            <div className="mb-2">
-              <h3 className="font-bold text-xl text-blue-400">{vendor.name}</h3>
-              <div className="text-sm text-gray-400">
-                {vendor.area} • <FontAwesomeIcon icon={faStar} />{" "}
-                {vendor.rating || "4.5"} • From ₦{vendor.price_from}
-              </div>
-            </div>
-
-            <p className="text-gray-300 mb-4">{vendor.short_desc}</p>
-
-            <div className="flex flex-wrap gap-2 mb-4">
-              {(vendor.tags ? vendor.tags.split(",").slice(0, 3) : []).map(
-                (tag, i) => (
-                  <span
-                    key={i}
-                    className="bg-gray-700 text-xs px-2 py-1 rounded-full"
-                  >
-                    {tag.trim()}
-                  </span>
-                )
-              )}
-            </div>
-
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm">
-              Map
-            </button>
-          </div>
-        ))}
       </div>
 
       {/* Footer */}
