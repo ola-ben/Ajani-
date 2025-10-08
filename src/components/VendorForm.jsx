@@ -13,8 +13,9 @@ const VendorForm = () => {
     businessImage: null,
   });
 
-  const [imageURL, setImageURL] = useState(""); // For Cloudinary URL
+  const [imageURL, setImageURL] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [toast, setToast] = useState({ show: false, type: "", message: "" });
 
   const categories = [
     "Food & Dining",
@@ -30,21 +31,20 @@ const VendorForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ✅ ONLY ONE handleImageChange — using Cloudinary
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     const validTypes = ["image/png", "image/jpeg"];
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 5 * 1024 * 1024;
 
     if (!validTypes.includes(file.type)) {
-      alert("Only PNG and JPG files are allowed.");
+      showToast("❌ Only PNG and JPG files are allowed.", "error");
       return;
     }
 
     if (file.size > maxSize) {
-      alert("File size must be less than 5MB.");
+      showToast("❌ File size must be less than 5MB.", "error");
       return;
     }
 
@@ -56,7 +56,7 @@ const VendorForm = () => {
 
     try {
       const response = await fetch(
-        "https://api.cloudinary.com/v1_1/debpabo0a/image/upload",
+        "https://api.cloudinary.com/v1_1/debpabo0a/image/upload", // ✅ No trailing space!
         {
           method: "POST",
           body: formDataCloud,
@@ -64,23 +64,21 @@ const VendorForm = () => {
       );
 
       const data = await response.json();
-      console.log("Cloudinary Response:", data);
 
       if (data.secure_url) {
         setImageURL(data.secure_url);
         setFormData((prev) => ({ ...prev, businessImage: data.secure_url }));
       } else {
-        throw new Error(
-          `Upload failed: ${data.error?.message || "Unknown error"}`
-        );
+        throw new Error(data.error?.message || "Upload failed");
       }
     } catch (error) {
       console.error("Image upload failed:", error);
-      alert(`❌ Failed to upload image: ${error.message}`);
+      showToast(`❌ Failed to upload image: ${error.message}`, "error");
     } finally {
       setIsUploading(false);
     }
   };
+
   const handleRemoveImage = () => {
     setImageURL("");
     setFormData((prev) => ({ ...prev, businessImage: null }));
@@ -109,6 +107,13 @@ const VendorForm = () => {
     });
   };
 
+  const showToast = (message, type) => {
+    setToast({ show: true, type, message });
+    setTimeout(() => {
+      setToast({ show: false, type: "", message: "" });
+    }, 4000);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -123,9 +128,8 @@ const VendorForm = () => {
         businessImage: imageURL,
       };
 
-      // 🔴 REPLACE WITH YOUR GOOGLE APPS SCRIPT URL
       await fetch(
-        "https://script.google.com/macros/s/AKfycbxKgc-mo5mWjrXQgY8_sEHDRDtHASPSdSq0wvu8_8dgcTX6DRvIzb_EAaq7mCcbki1r/exec",
+        "https://script.google.com/macros/s/AKfycbxKgc-mo5mWjrXQgY8_sEHDRDtHASPSdSq0wvu8_8dgcTX6DRvIzb_EAaq7mCcbki1r/exec", // ✅ No trailing space!
         {
           method: "POST",
           mode: "no-cors",
@@ -136,9 +140,11 @@ const VendorForm = () => {
         }
       );
 
-      alert(
-        "✅ Form submitted! We’ll review and add you to our catalog within 24 hours."
+      showToast(
+        "✅ Form submitted! We’ll review and add you to our catalog within 24 hours.",
+        "success"
       );
+
       setFormData({
         businessName: "",
         category: "",
@@ -153,7 +159,10 @@ const VendorForm = () => {
       setImageURL("");
     } catch (error) {
       console.error("Submission failed:", error);
-      alert("❌ Failed to submit. Please try again or contact us on WhatsApp.");
+      showToast(
+        "❌ Failed to submit. Please try again or contact us on WhatsApp.",
+        "error"
+      );
     } finally {
       submitBtn.innerHTML = originalText;
       submitBtn.disabled = false;
@@ -161,7 +170,18 @@ const VendorForm = () => {
   };
 
   return (
-    <section id="vendors" className="py-16 bg-gray-900 text-white">
+    <section id="vendors" className="py-16 bg-gray-900 text-white relative">
+      {/* Toast Notification */}
+      {toast.show && (
+        <div
+          className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white font-medium max-w-md animate-fadeIn ${
+            toast.type === "success" ? "bg-green-600" : "bg-red-600"
+          }`}
+        >
+          {toast.message}
+        </div>
+      )}
+
       <div className="max-w-5xl mx-auto px-4">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold mb-2">
@@ -312,7 +332,7 @@ const VendorForm = () => {
               >
                 <input
                   type="file"
-                  accept="image/png, image/jpeg, image/jpg"
+                  accept="image/png, image/jpeg"
                   onChange={handleImageChange}
                   className="hidden"
                   id="businessImageInput"
