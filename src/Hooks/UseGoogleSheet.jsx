@@ -1,49 +1,35 @@
-// hooks/useGoogleSheet.js
 import { useState, useEffect } from "react";
-
-export const useGoogleSheet = (sheetId, apiKey) => {
+// ✅ Custom Hook: Fetch Data from Google Apps Script Web App
+const useGoogleSheet = (webAppUrl) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Refetch logic here
-    }, 30000); // 30 seconds
-
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await fetch(
-          `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A1:Z1000?key=${apiKey}`
-        );
+        const response = await fetch(webAppUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
         const result = await response.json();
 
-        if (result.values && result.values.length > 1) {
-          const headers = result.values[0];
-          const rows = result.values.slice(1);
-
-          const formatted = rows.map((row) => {
-            const obj = {};
-            headers.forEach((header, index) => {
-              obj[header] = row[index] || "";
-            });
-            return obj;
-          });
-
-          setData(formatted);
+        if (Array.isArray(result)) {
+          setData(result);
+        } else {
+          setError(result.error || "Unknown error");
         }
       } catch (err) {
-        setError("Failed to load data");
+        console.error("Fetch error:", err);
+        setError("Failed to load data. Check console for details.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [sheetId, apiKey]);
+  }, [webAppUrl]);
 
   return { data, loading, error };
 };

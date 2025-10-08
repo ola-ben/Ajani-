@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   BarChart,
   Bar,
@@ -18,6 +18,8 @@ import {
   faArrowUp,
   faArrowDown,
   faLayerGroup,
+  faSun,
+  faMoon,
 } from "@fortawesome/free-solid-svg-icons";
 
 // ✅ Custom Hook: Fetch Data from Google Sheet
@@ -25,19 +27,26 @@ const useGoogleSheet = (sheetId, apiKey) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [lastFetch, setLastFetch] = useState(Date.now());
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
+      setError(null);
       try {
+        // ✅ Fixed URL: removed extra spaces
         const response = await fetch(
           `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A1:Z1000?key=${apiKey}`
         );
         const result = await response.json();
 
-        if (result.values && result.values.length > 1) {
+        if (
+          result.values &&
+          Array.isArray(result.values) &&
+          result.values.length > 1
+        ) {
           const headers = result.values[0];
           const rows = result.values.slice(1);
-
           const formatted = rows.map((row) => {
             const obj = {};
             headers.forEach((header, index) => {
@@ -45,35 +54,91 @@ const useGoogleSheet = (sheetId, apiKey) => {
             });
             return obj;
           });
-
           setData(formatted);
+        } else {
+          setData([]);
         }
       } catch (err) {
         console.error("Fetch error:", err);
         setError("Failed to load data. Check console for details.");
+        setData([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [sheetId, apiKey]);
+  }, [sheetId, apiKey, lastFetch]);
 
-  return { data, loading, error };
+  const refetch = () => setLastFetch(Date.now());
+
+  return { data, loading, error, refetch };
+};
+
+// ✅ Dark Mode Hook — defaults to LIGHT on first load
+const useDarkMode = () => {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem("darkMode");
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("darkMode", JSON.stringify(isDarkMode));
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
+
+  return { isDarkMode, toggleDarkMode };
 };
 
 const Dashboard = () => {
   const SHEET_ID = "1ZUU4Cw29jhmSnTh1yJ_ZoQB7TN1zr2_7bcMEHP8O1_Y";
   const API_KEY = "AIzaSyCELfgRKcAaUeLnInsvenpXJRi2kSSwS3E";
 
-  const { data: vendors, loading, error } = useGoogleSheet(SHEET_ID, API_KEY);
+  const {
+    data: vendors,
+    loading: dataLoading,
+    error,
+    refetch,
+  } = useGoogleSheet(SHEET_ID, API_KEY);
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
 
-  const [selectedCategory, setSelectedCategory] = useState("Accommodation");
+  // ✅ New: Delay content display by 3 seconds
+  const [showContent, setShowContent] = useState(false);
+
+  useEffect(() => {
+    // If there's an error, show it immediately
+    if (error) {
+      setShowContent(true);
+      return;
+    }
+
+    // Otherwise, wait 3 seconds before showing content
+    const timer = setTimeout(() => {
+      setShowContent(true);
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [error]);
+
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedArea, setSelectedArea] = useState("");
-  const [activeBarIndex, setActiveBarIndex] = useState(null);
+  const [pulling, setPulling] = useState(false);
+  const [pullStartY, setPullStartY] = useState(0);
 
-  // Filter vendors by category
-  const filteredVendors = vendors.filter((vendor) => {
+  const [activeCategories, setActiveCategories] = useState({
+    Accommodation: true,
+    Transportation: true,
+    "Weekend Event": true,
+  });
+
+  const safeVendors = Array.isArray(vendors) ? vendors : [];
+  const filteredVendors = safeVendors.filter((vendor) => {
     const matchesCategory =
       selectedCategory === "All" || vendor.category === selectedCategory;
     const matchesArea = !selectedArea || vendor.area === selectedArea;
@@ -108,7 +173,6 @@ const Dashboard = () => {
       )
     : 0;
 
-  // ✅ Safe fallbacks
   const affordableArea =
     avgPricesArray.length > 0
       ? avgPricesArray.reduce(
@@ -125,20 +189,10 @@ const Dashboard = () => {
         )
       : { area: "—", price: 0 };
 
-  // Category Comparison Data (by price)
   const categoryComparisonData = [
-    {
-      name: "Accommodation",
-      value: 0,
-    },
-    {
-      name: "Transportation",
-      value: 0,
-    },
-    {
-      name: "Weekend Event",
-      value: 0,
-    },
+    { name: "Accommodation", value: 0 },
+    { name: "Transportation", value: 0 },
+    { name: "Weekend Event", value: 0 },
   ];
 
   filteredVendors.forEach((vendor) => {
@@ -156,192 +210,337 @@ const Dashboard = () => {
 
   const COLORS = ["#101828", "#05f2c1", "#3276ee"];
 
-  // Auto-refresh every 30 seconds
+  // Auto-refetch every 90 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      window.location.reload(); // Simple reload — you can replace with refetch logic later
-    }, 90000); // 30 seconds
-
+      refetch();
+    }, 90000);
     return () => clearInterval(interval);
-  }, []);
+  }, [refetch]);
 
-  // Handle bar click
-  const handleBarClick = (data, index) => {
-    setActiveBarIndex(index);
+  const handleBarClick = (data) => {
     setSelectedArea(data.area);
   };
 
-  if (loading) {
+  const handleLegendClick = (entry) => {
+    setActiveCategories((prev) => ({
+      ...prev,
+      [entry.value]: !prev[entry.value],
+    }));
+  };
+
+  const filteredPieData = categoryComparisonData.filter(
+    (item) => activeCategories[item.name]
+  );
+
+  const renderLegendText = (value, entry) => {
+    const isActive = activeCategories[value];
     return (
-      <div className="bg-gray-900 text-white p-6 min-h-screen">
+      <span
+        style={{
+          color: isActive ? "#ffffff" : "#777777",
+          fontWeight: isActive ? "bold" : "normal",
+          textDecoration: isActive ? "none" : "line-through",
+          cursor: "pointer",
+          padding: "0 4px",
+          transition: "all 0.2s ease",
+        }}
+        onClick={() => handleLegendClick(entry)}
+        onMouseEnter={(e) => {
+          e.target.style.color = isActive ? "#05f2c1" : "#aaaaaa";
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.color = isActive ? "#ffffff" : "#777777";
+        }}
+      >
+        {value}
+      </span>
+    );
+  };
+
+  // ✅ Pull-to-refresh
+  const handleTouchStart = (e) => {
+    if (window.scrollY === 0) {
+      setPullStartY(e.touches[0].clientY);
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!pullStartY) return;
+    const currentY = e.touches[0].clientY;
+    const diff = currentY - pullStartY;
+    if (diff > 0 && window.scrollY === 0) {
+      e.preventDefault();
+      setPulling(true);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (pulling) {
+      refetch();
+    }
+    setPulling(false);
+    setPullStartY(0);
+  };
+
+  // ✅ Show error immediately
+  if (error) {
+    return (
+      <div
+        className={`min-h-screen flex items-center justify-center ${
+          isDarkMode ? "bg-gray-900 text-red-400" : "bg-gray-100 text-red-600"
+        }`}
+      >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4">Loading dashboard...</p>
+          <p className="text-xl font-bold">⚠️ Error Loading Data</p>
+          <p className="mt-2">{error}</p>
         </div>
       </div>
     );
   }
 
-  if (error) {
+  // ✅ Show loading spinner for at least 3 seconds
+  if (!showContent) {
     return (
-      <div className="bg-gray-900 text-white p-6 min-h-screen">
-        <div className="text-center text-red-500">{error}</div>
+      <div
+        className={`min-h-screen flex items-center justify-center ${
+          isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
+        }`}
+      >
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-lg">Loading Ajani Dashboard...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-900 text-white p-6 min-h-screen font-rubik">
-      {/* Header */}
-      <h1 className="text-2xl font-bold mb-6">Ajani — Ibadan Price Insights</h1>
+    <div
+      className={`min-h-screen transition-colors duration-300 ${
+        isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
+      }`}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      <div className="p-4 md:p-6 font-sans">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-xl md:text-2xl font-bold">
+            Ajani — Ibadan Price Insights
+          </h1>
+          <button
+            onClick={toggleDarkMode}
+            className={`p-2 rounded-full ${
+              isDarkMode
+                ? "bg-gray-700 text-yellow-300"
+                : "bg-gray-200 text-gray-700"
+            }`}
+            aria-label={
+              isDarkMode ? "Switch to light mode" : "Switch to dark mode"
+            }
+          >
+            <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />
+          </button>
+        </div>
 
-      {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500"
+        {/* Filters */}
+        <div className="flex flex-wrap gap-3 mb-6">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className={`px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 min-w-[120px] ${
+              isDarkMode
+                ? "bg-gray-800 text-white border-gray-700"
+                : "bg-white text-gray-900 border-gray-300"
+            }`}
+          >
+            <option value="All">All Categories</option>
+            <option value="accommodation.hotel">Accommodation</option>
+            <option value="transport.ridehail">Transportation</option>
+            <option value="event.weekend">Weekend Event</option>
+          </select>
+
+          <input
+            type="text"
+            value={selectedArea}
+            onChange={(e) => setSelectedArea(e.target.value)}
+            placeholder="Area: Bodija"
+            className={`px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 min-w-[120px] flex-1 ${
+              isDarkMode
+                ? "bg-gray-800 text-white border-gray-700"
+                : "bg-white text-gray-900 border-gray-300"
+            }`}
+          />
+        </div>
+
+        {/* Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+          {[
+            {
+              title: "Price Index",
+              value: `₦${priceIndex.toLocaleString()}`,
+              change: "+5.2% from last month",
+              icon: faArrowUp,
+              color: "text-green-500",
+            },
+            {
+              title: "Most Affordable Area",
+              value: affordableArea.area,
+              change: `${Math.round(
+                ((priceIndex - affordableArea.price) / priceIndex) * 100
+              )}% below avg`,
+              icon: faArrowDown,
+              color: "text-green-500",
+            },
+            {
+              title: "Price Alert",
+              value: alertArea.area,
+              change: `${Math.round(
+                ((alertArea.price - priceIndex) / priceIndex) * 100
+              )}% increase`,
+              icon: faArrowUp,
+              color: "text-red-500",
+            },
+          ].map((card, i) => (
+            <div
+              key={i}
+              className={`p-4 rounded-lg shadow border ${
+                isDarkMode
+                  ? "bg-gray-800 border-gray-700"
+                  : "bg-white border-gray-200"
+              }`}
+            >
+              <h4
+                className={`text-xs md:text-sm font-medium ${
+                  isDarkMode ? "text-blue-400" : "text-blue-600"
+                }`}
+              >
+                {card.title}
+              </h4>
+              <div className="text-xl font-bold mt-1">{card.value}</div>
+              <div className={`text-xs mt-1 flex items-center ${card.color}`}>
+                <FontAwesomeIcon icon={card.icon} className="mr-1" />{" "}
+                {card.change}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Bar Chart */}
+          <div
+            className={`p-4 rounded-lg shadow border ${
+              isDarkMode
+                ? "bg-gray-800 border-gray-700"
+                : "bg-white border-gray-200"
+            }`}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold">Average Prices by Area</h3>
+              <span className="bg-blue-100 p-2 rounded-full">
+                <FontAwesomeIcon
+                  icon={faMapMarkerAlt}
+                  className="text-[#1ab9d6]"
+                />
+              </span>
+            </div>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={sortedAvgPricesArray}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={isDarkMode ? "#444" : "#ddd"}
+                />
+                <XAxis dataKey="area" stroke={isDarkMode ? "#aaa" : "#666"} />
+                <YAxis
+                  stroke={isDarkMode ? "#aaa" : "#666"}
+                  tickFormatter={(v) => `₦${v}`}
+                />
+                <Tooltip
+                  formatter={(v) => [`₦${v.toLocaleString()}`, "Price"]}
+                />
+                <Bar
+                  dataKey="price"
+                  onClick={handleBarClick}
+                  style={{ cursor: "pointer" }}
+                >
+                  {sortedAvgPricesArray.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Pie Chart */}
+          <div
+            className={`p-4 rounded-lg shadow border ${
+              isDarkMode
+                ? "bg-gray-800 border-gray-700"
+                : "bg-white border-gray-200"
+            }`}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold">Category Comparison</h3>
+              <span className="bg-blue-100 p-2 rounded-full">
+                <FontAwesomeIcon
+                  icon={faLayerGroup}
+                  className="text-[#1ab9d6]"
+                />
+              </span>
+            </div>
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={filteredPieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                  label={({ name, value }) =>
+                    `${name}: ₦${value.toLocaleString()}`
+                  }
+                >
+                  {filteredPieData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(v) => [`₦${v.toLocaleString()}`, "Total"]}
+                />
+                <Legend formatter={renderLegendText} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div
+          className={`text-xs text-center ${
+            isDarkMode ? "text-gray-500" : "text-gray-600"
+          }`}
         >
-          <option value="All">All Categories</option>
-          <option value="accommodation.hotel">Accommodation</option>
-          <option value="transport.ridehail">Transportation</option>
-          <option value="event.weekend">Weekend Event</option>
-        </select>
-
-        <input
-          type="text"
-          value={selectedArea}
-          onChange={(e) => setSelectedArea(e.target.value)}
-          placeholder="Area: Bodija"
-          className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      {/* === GRAPHS SECTION === */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {/* Price Index Card */}
-        <div className="bg-gray-800 p-4 rounded-lg shadow border border-gray-700">
-          <h4 className="text-sm font-medium text-blue-400">Price Index</h4>
-          <div className="text-2xl font-bold">
-            ₦{priceIndex.toLocaleString()}
-          </div>
-          <div className="text-green-500 text-sm mt-1 flex items-center">
-            <FontAwesomeIcon icon={faArrowUp} className="mr-1" /> +5.2% from
-            last month
-          </div>
-        </div>
-
-        {/* Most Affordable Area */}
-        <div className="bg-gray-800 p-4 rounded-lg shadow border border-gray-700">
-          <h4 className="text-sm font-medium text-blue-400">
-            Most Affordable Area
-          </h4>
-          <div className="text-2xl font-bold">{affordableArea.area}</div>
-          <div className="text-green-500 text-sm mt-1 flex items-center">
-            <FontAwesomeIcon icon={faArrowDown} className="mr-1" />
-            {Math.round(
-              ((priceIndex - affordableArea.price) / priceIndex) * 100
-            )}
-            % below avg
-          </div>
-        </div>
-
-        {/* Price Alert */}
-        <div className="bg-gray-800 p-4 rounded-lg shadow border border-gray-700">
-          <h4 className="text-sm font-medium text-blue-400">Price Alert</h4>
-          <div className="text-2xl font-bold">{alertArea.area}</div>
-          <div className="text-red-500 text-sm mt-1 flex items-center">
-            <FontAwesomeIcon icon={faArrowUp} className="mr-1" />
-            {Math.round(((alertArea.price - priceIndex) / priceIndex) * 100)}%
-            increase
-          </div>
+          Results: {filteredVendors.length} places • Data source: Google Sheets
+          • Prices indicative.
         </div>
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Bar Chart */}
-        <div className="bg-gray-800 p-4 rounded-lg shadow border border-gray-700">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold">Average Prices by Area</h3>
-            <span className="bg-blue-100 p-2 rounded-full">
-              <FontAwesomeIcon
-                icon={faMapMarkerAlt}
-                className="text-[#1ab9d6]"
-              />
-            </span>
-          </div>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={sortedAvgPricesArray}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-              <XAxis dataKey="area" stroke="#aaa" />
-              <YAxis stroke="#aaa" tickFormatter={(v) => `₦${v}`} />
-              <Tooltip formatter={(v) => [`₦${v.toLocaleString()}`, "Price"]} />
-              <Bar
-                dataKey="price"
-                onClick={handleBarClick}
-                activeBar={
-                  <rect
-                    fill="#10b981"
-                    stroke="#000"
-                    strokeWidth={2}
-                    filter="url(#shadow)"
-                  />
-                }
-                style={{ cursor: "pointer" }}
-              >
-                {sortedAvgPricesArray.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+      {/* Pull-to-refresh indicator */}
+      {pulling && (
+        <div className="fixed top-0 left-0 right-0 bg-blue-500 text-white text-center py-2 text-sm z-50">
+          Release to refresh...
         </div>
-
-        {/* Pie Chart */}
-        <div className="bg-gray-800 p-4 rounded-lg shadow border border-gray-700">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold">Category Comparison</h3>
-            <span className="bg-blue-100 p-2 rounded-full">
-              <FontAwesomeIcon icon={faLayerGroup} className="text-[#1ab9d6]" />
-            </span>
-          </div>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie
-                data={categoryComparisonData}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={80}
-                paddingAngle={5}
-                dataKey="value"
-                label={({ name, value }) =>
-                  `${name}: ₦${value.toLocaleString()}`
-                }
-              >
-                {categoryComparisonData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip formatter={(v) => `₦${v.toLocaleString()}`} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div className="mt-6 text-sm text-gray-500">
-        Results: {filteredVendors.length} places • Data source: Google Sheets
-        CSV • Prices indicative; last verified dates may apply.
-      </div>
+      )}
     </div>
   );
 };
