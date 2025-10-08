@@ -160,7 +160,7 @@ const Dashboard = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       window.location.reload(); // Simple reload — you can replace with refetch logic later
-    }, 30000); // 30 seconds
+    }, 90000); // 30 seconds
 
     return () => clearInterval(interval);
   }, []);
