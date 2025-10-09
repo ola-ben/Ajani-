@@ -108,21 +108,15 @@ const Dashboard = () => {
   } = useGoogleSheet(SHEET_ID, API_KEY);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
-  // ✅ New: Delay content display by 3 seconds
+  // ✅ Delay content display by 4 seconds
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    // If there's an error, show it immediately
     if (error) {
       setShowContent(true);
       return;
     }
-
-    // Otherwise, wait 3 seconds before showing content
-    const timer = setTimeout(() => {
-      setShowContent(true);
-    }, 4000);
-
+    const timer = setTimeout(() => setShowContent(true), 3000);
     return () => clearTimeout(timer);
   }, [error]);
 
@@ -131,6 +125,10 @@ const Dashboard = () => {
   const [pulling, setPulling] = useState(false);
   const [pullStartY, setPullStartY] = useState(0);
 
+  // ✅ Autocomplete state
+  const [areaSuggestions, setAreaSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
   const [activeCategories, setActiveCategories] = useState({
     Accommodation: true,
     Transportation: true,
@@ -138,10 +136,19 @@ const Dashboard = () => {
   });
 
   const safeVendors = Array.isArray(vendors) ? vendors : [];
+
+  // ✅ Get unique areas for suggestions
+  const allAreas = Array.from(
+    new Set(safeVendors.map((v) => v.area?.trim()).filter(Boolean))
+  ).sort();
+
+  // ✅ Filter vendors (case-insensitive area match)
   const filteredVendors = safeVendors.filter((vendor) => {
     const matchesCategory =
       selectedCategory === "All" || vendor.category === selectedCategory;
-    const matchesArea = !selectedArea || vendor.area === selectedArea;
+    const matchesArea =
+      !selectedArea ||
+      vendor.area?.toLowerCase().includes(selectedArea.toLowerCase());
     return matchesCategory && matchesArea;
   });
 
@@ -283,7 +290,6 @@ const Dashboard = () => {
     setPullStartY(0);
   };
 
-  // ✅ Show error immediately
   if (error) {
     return (
       <div
@@ -299,7 +305,6 @@ const Dashboard = () => {
     );
   }
 
-  // ✅ Show loading spinner for at least 3 seconds
   if (!showContent) {
     return (
       <div
@@ -324,15 +329,19 @@ const Dashboard = () => {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="p-4 md:p-6 font-sans">
+      <div className="p-4 md:p-6 font-rubik">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-xl md:text-2xl font-bold font-rubik #101828">
+          <h1
+            className={`text-xl md:text-2xl font-bold ${
+              isDarkMode ? "text-white" : "text-[#101828]"
+            }`}
+          >
             Ajani — Ibadan Price Insights
           </h1>
           <button
             onClick={toggleDarkMode}
-            className={`p-2 rounded-full font-rubik  ${
+            className={`p-2 rounded-full ${
               isDarkMode
                 ? "bg-gray-700 text-yellow-300"
                 : "bg-gray-200 text-gray-700"
@@ -350,7 +359,7 @@ const Dashboard = () => {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className={`px-3 py-2 rounded-lg font-rubik border focus:ring-2 focus:ring-blue-500 min-w-[120px]  ${
+            className={`px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 min-w-[120px] ${
               isDarkMode
                 ? "bg-gray-800 text-white border-gray-700"
                 : "bg-white text-gray-900 border-gray-300"
@@ -362,21 +371,76 @@ const Dashboard = () => {
             <option value="event.weekend">Weekend Event</option>
           </select>
 
-          <input
-            type="text"
-            value={selectedArea}
-            onChange={(e) => setSelectedArea(e.target.value)}
-            placeholder="Area: Bodija"
-            className={`px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 min-w-[120px] flex-1 ${
-              isDarkMode
-                ? "bg-gray-800 text-white border-gray-700"
-                : "bg-white text-gray-900 border-gray-300"
-            }`}
-          />
+          {/* ✅ Area Input with Autocomplete */}
+          <div className="relative min-w-[120px] flex-1">
+            <input
+              type="text"
+              value={selectedArea}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSelectedArea(val);
+                if (val.trim() === "") {
+                  setAreaSuggestions([]);
+                  setShowSuggestions(false);
+                } else {
+                  const matches = allAreas.filter((area) =>
+                    area.toLowerCase().includes(val.toLowerCase())
+                  );
+                  setAreaSuggestions(matches);
+                  setShowSuggestions(true);
+                }
+              }}
+              onFocus={() => {
+                if (selectedArea.trim() !== "") {
+                  const matches = allAreas.filter((area) =>
+                    area.toLowerCase().includes(selectedArea.toLowerCase())
+                  );
+                  setAreaSuggestions(matches);
+                } else {
+                  setAreaSuggestions(allAreas);
+                }
+                setShowSuggestions(true);
+              }}
+              onBlur={() => {
+                setTimeout(() => setShowSuggestions(false), 200);
+              }}
+              placeholder="Area: Bodija"
+              className={`px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 w-full ${
+                isDarkMode
+                  ? "bg-gray-800 text-white border-gray-700"
+                  : "bg-white text-gray-900 border-gray-300"
+              }`}
+            />
+            {/* Suggestions Dropdown */}
+            {showSuggestions && areaSuggestions.length > 0 && (
+              <ul
+                className={`absolute z-10 w-full mt-1 rounded-lg shadow-lg max-h-60 overflow-auto ${
+                  isDarkMode
+                    ? "bg-gray-800 border border-gray-700"
+                    : "bg-white border border-gray-300"
+                }`}
+              >
+                {areaSuggestions.map((area, idx) => (
+                  <li
+                    key={idx}
+                    onClick={() => {
+                      setSelectedArea(area);
+                      setShowSuggestions(false);
+                    }}
+                    className={`px-3 py-2 cursor-pointer hover:${
+                      isDarkMode ? "bg-gray-700" : "bg-gray-100"
+                    }`}
+                  >
+                    {area}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8 font-rubik">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
           {[
             {
               title: "Price Index",
@@ -406,15 +470,15 @@ const Dashboard = () => {
           ].map((card, i) => (
             <div
               key={i}
-              className={`p-4 rounded-lg shadow border font-rubik ${
+              className={`p-4 rounded-lg shadow border ${
                 isDarkMode
                   ? "bg-gray-800 border-gray-700"
                   : "bg-white border-gray-200"
               }`}
             >
               <h4
-                className={`text-xs md:text-sm font-rubik font-medium ${
-                  isDarkMode ? "text-blue-400" : "text-blue-600"
+                className={`text-xs md:text-sm font-medium ${
+                  isDarkMode ? "text-blue-400" : "text-[#101828]"
                 }`}
               >
                 {card.title}
@@ -439,7 +503,11 @@ const Dashboard = () => {
             }`}
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold font-rubik #101828">
+              <h3
+                className={`font-semibold ${
+                  isDarkMode ? "text-white" : "text-[#101828]"
+                }`}
+              >
                 Average Prices by Area
               </h3>
               <span className="bg-blue-100 p-2 rounded-full">
@@ -488,7 +556,11 @@ const Dashboard = () => {
             }`}
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold font-rubik #101828">
+              <h3
+                className={`font-semibold ${
+                  isDarkMode ? "text-white" : "text-[#101828]"
+                }`}
+              >
                 Category Comparison
               </h3>
               <span className="bg-blue-100 p-2 rounded-full">
@@ -530,7 +602,7 @@ const Dashboard = () => {
 
         {/* Footer */}
         <div
-          className={`text-xs font-rubik text-center ${
+          className={`text-xs text-center ${
             isDarkMode ? "text-gray-500" : "text-gray-600"
           }`}
         >
@@ -541,7 +613,7 @@ const Dashboard = () => {
 
       {/* Pull-to-refresh indicator */}
       {pulling && (
-        <div className="fixed font-rubik top-0 left-0 right-0 bg-blue-500 text-white text-center py-2 text-sm z-50">
+        <div className="fixed top-0 left-0 right-0 bg-blue-500 text-white text-center py-2 text-sm z-50 font-rubik">
           Release to refresh...
         </div>
       )}
