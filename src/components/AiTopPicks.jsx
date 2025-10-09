@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDirectoryData } from "../Hooks/useDirectoryData";
+import { useDirectoryData } from "../hook/useDirectoryData";
 
 // ✅ Hardcoded fallback images
 const FALLBACK_IMAGES = {
