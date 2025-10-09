@@ -68,7 +68,7 @@ const AiTopPicks = () => {
       <section className="bg-slate-100 py-16 font-rubik">
         <div className="max-w-7xl mx-auto px-5 text-center">
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-lg">Top picks data is loading....</p>
+          <p className="mt-4 text-lg">Top picks data is loading...</p>
         </div>
       </section>
     );
