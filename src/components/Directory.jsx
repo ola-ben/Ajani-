@@ -1,12 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSearch,
-  faComment,
-  faStore,
-} from "@fortawesome/free-solid-svg-icons";
+import { faComment, faStore } from "@fortawesome/free-solid-svg-icons";
 
-// ✅ Custom Hook: Fetch Data from Google Sheet
+// ✅ Hardcoded fallback images by ID and category
+const FALLBACK_IMAGES = {
+  // By ID (match your sheet's 'id' column)
+  1: "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+  2: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+  3: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+  // By category
+  "hotel-default":
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80",
+  "transport-default":
+    "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&q=80",
+  "event-default":
+    "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80",
+  // Add more as needed
+};
+
+// ✅ Custom Hook: Fetch Data from Google Sheets API
 const useGoogleSheet = (sheetId, apiKey) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,6 +27,7 @@ const useGoogleSheet = (sheetId, apiKey) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // ✅ Fixed: Removed extra spaces around ${sheetId}
         const response = await fetch(
           `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A1:Z1000?key=${apiKey}`
         );
@@ -23,7 +36,6 @@ const useGoogleSheet = (sheetId, apiKey) => {
         if (result.values && result.values.length > 1) {
           const headers = result.values[0];
           const rows = result.values.slice(1);
-
           const formatted = rows.map((row) => {
             const obj = {};
             headers.forEach((header, index) => {
@@ -31,7 +43,6 @@ const useGoogleSheet = (sheetId, apiKey) => {
             });
             return obj;
           });
-
           setData(formatted);
         }
       } catch (err) {
@@ -46,6 +57,33 @@ const useGoogleSheet = (sheetId, apiKey) => {
   }, [sheetId, apiKey]);
 
   return { data, loading, error };
+};
+
+// ✅ Image resolver with fallback logic
+const getFallbackImage = (item) => {
+  // 1. Try image from sheet (trim and validate)
+  const sheetImage = (item.image_url || "").trim();
+  if (sheetImage && sheetImage.startsWith("http")) {
+    return sheetImage;
+  }
+
+  // 2. Try by ID
+  if (item.id && FALLBACK_IMAGES[item.id]) {
+    return FALLBACK_IMAGES[item.id];
+  }
+
+  // 3. Try by category
+  if (item.category) {
+    if (item.category.includes("hotel"))
+      return FALLBACK_IMAGES["hotel-default"];
+    if (item.category.includes("ridehail"))
+      return FALLBACK_IMAGES["transport-default"];
+    if (item.category.includes("event"))
+      return FALLBACK_IMAGES["event-default"];
+  }
+
+  // 4. Final fallback
+  return "https://via.placeholder.com/300x200?text=No+Image";
 };
 
 const Directory = () => {
@@ -70,7 +108,7 @@ const Directory = () => {
   useEffect(() => {
     let result = listings.filter((item) => {
       const matchesSearch =
-        item.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.name?.toLowerCase().includes(search.toLowerCase()) ||
         (item.short_desc &&
           item.short_desc.toLowerCase().includes(search.toLowerCase())) ||
         (item.tags && item.tags.toLowerCase().includes(search.toLowerCase()));
@@ -80,7 +118,7 @@ const Directory = () => {
     });
 
     setFiltered(result);
-    setCurrentPage(1); // Reset to page 1 on filter change
+    setCurrentPage(1);
   }, [listings, search, category, area]);
 
   // Pagination
@@ -167,8 +205,6 @@ const Directory = () => {
               ))}
             </select>
           </div>
-
-          {/* Removed Max Price Slider */}
         </div>
 
         {/* Results */}
@@ -183,15 +219,12 @@ const Directory = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
               {currentItems.map((item) => (
                 <div
-                  key={item.id}
+                  key={item.id || item.name}
                   className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow hover:shadow-md hover:-translate-y-1 transition flex flex-col h-full"
                 >
                   <img
-                    src={
-                      item.image_url ||
-                      "https://via.placeholder.com/300x200?text=No+Image"
-                    }
-                    alt={item.name}
+                    src={getFallbackImage(item)}
+                    alt={item.name || "Business"}
                     className="w-full h-44 object-cover bg-slate-100"
                     onError={(e) => {
                       e.target.src =
@@ -215,7 +248,7 @@ const Directory = () => {
                       </div>
                     )}
 
-                    {/* Tags Section — Styled Exactly Like Your Image */}
+                    {/* Tags */}
                     <div className="flex flex-wrap gap-2 mb-4">
                       {(item.tags ? item.tags.split(",") : []).map((tag, i) => {
                         const [name, price] = tag.trim().split(":");
@@ -239,9 +272,10 @@ const Directory = () => {
 
                     <div className="mt-auto flex gap-2">
                       <a
-                        href={`https://wa.me/${
-                          item.whatsapp || "2348123456789"
-                        }?text=${encodeURIComponent(
+                        href={`https://wa.me/${(item.whatsapp || "").replace(
+                          /\D/g,
+                          ""
+                        )}?text=${encodeURIComponent(
                           "Tell me more about " + item.name
                         )}`}
                         target="_blank"
@@ -262,7 +296,7 @@ const Directory = () => {
               ))}
             </div>
 
-            {/* Pagination — Prev appears only after page 1 */}
+            {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex justify-center mt-8">
                 {currentPage > 1 && (

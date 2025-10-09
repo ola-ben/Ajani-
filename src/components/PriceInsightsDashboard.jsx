@@ -292,7 +292,7 @@ const Dashboard = () => {
         }`}
       >
         <div className="text-center">
-          <p className="text-xl font-bold">⚠️ Error Loading Data</p>
+          <p className="text-xl font-bold font-rubik">⚠️ Error Loading Data</p>
           <p className="mt-2">{error}</p>
         </div>
       </div>
@@ -309,7 +309,7 @@ const Dashboard = () => {
       >
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-lg">Loading Ajani Dashboard...</p>
+          <p className="mt-4 text-lg font-rubik">Loading Ajani Dashboard...</p>
         </div>
       </div>
     );
@@ -327,12 +327,12 @@ const Dashboard = () => {
       <div className="p-4 md:p-6 font-sans">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-xl md:text-2xl font-bold">
+          <h1 className="text-xl md:text-2xl font-bold font-rubik #101828">
             Ajani — Ibadan Price Insights
           </h1>
           <button
             onClick={toggleDarkMode}
-            className={`p-2 rounded-full ${
+            className={`p-2 rounded-full font-rubik  ${
               isDarkMode
                 ? "bg-gray-700 text-yellow-300"
                 : "bg-gray-200 text-gray-700"
@@ -350,7 +350,7 @@ const Dashboard = () => {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className={`px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 min-w-[120px] ${
+            className={`px-3 py-2 rounded-lg font-rubik border focus:ring-2 focus:ring-blue-500 min-w-[120px]  ${
               isDarkMode
                 ? "bg-gray-800 text-white border-gray-700"
                 : "bg-white text-gray-900 border-gray-300"
@@ -376,7 +376,7 @@ const Dashboard = () => {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8 font-rubik">
           {[
             {
               title: "Price Index",
@@ -406,14 +406,14 @@ const Dashboard = () => {
           ].map((card, i) => (
             <div
               key={i}
-              className={`p-4 rounded-lg shadow border ${
+              className={`p-4 rounded-lg shadow border font-rubik ${
                 isDarkMode
                   ? "bg-gray-800 border-gray-700"
                   : "bg-white border-gray-200"
               }`}
             >
               <h4
-                className={`text-xs md:text-sm font-medium ${
+                className={`text-xs md:text-sm font-rubik font-medium ${
                   isDarkMode ? "text-blue-400" : "text-blue-600"
                 }`}
               >
@@ -439,7 +439,9 @@ const Dashboard = () => {
             }`}
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold">Average Prices by Area</h3>
+              <h3 className="font-semibold font-rubik #101828">
+                Average Prices by Area
+              </h3>
               <span className="bg-blue-100 p-2 rounded-full">
                 <FontAwesomeIcon
                   icon={faMapMarkerAlt}
@@ -486,7 +488,9 @@ const Dashboard = () => {
             }`}
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold">Category Comparison</h3>
+              <h3 className="font-semibold font-rubik #101828">
+                Category Comparison
+              </h3>
               <span className="bg-blue-100 p-2 rounded-full">
                 <FontAwesomeIcon
                   icon={faLayerGroup}
@@ -526,7 +530,7 @@ const Dashboard = () => {
 
         {/* Footer */}
         <div
-          className={`text-xs text-center ${
+          className={`text-xs font-rubik text-center ${
             isDarkMode ? "text-gray-500" : "text-gray-600"
           }`}
         >
@@ -537,7 +541,7 @@ const Dashboard = () => {
 
       {/* Pull-to-refresh indicator */}
       {pulling && (
-        <div className="fixed top-0 left-0 right-0 bg-blue-500 text-white text-center py-2 text-sm z-50">
+        <div className="fixed font-rubik top-0 left-0 right-0 bg-blue-500 text-white text-center py-2 text-sm z-50">
           Release to refresh...
         </div>
       )}

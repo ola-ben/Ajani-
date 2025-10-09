@@ -35,13 +35,7 @@ const Footer = () => {
               >
                 <i className="fab fa-facebook-f"></i>
               </a>
-              <a
-                href="#"
-                className="text-slate-500 hover:text-blue-400 transition"
-                aria-label="Twitter"
-              >
-                <i className="fab fa-twitter"></i>
-              </a>
+
               <a
                 href="#"
                 className="text-slate-500 hover:text-blue-400 transition"
@@ -49,13 +43,7 @@ const Footer = () => {
               >
                 <i className="fab fa-instagram"></i>
               </a>
-              <a
-                href="#"
-                className="text-slate-500 hover:text-blue-400 transition"
-                aria-label="LinkedIn"
-              >
-                <i className="fab fa-linkedin-in"></i>
-              </a>
+
               <a
                 href="mailto:ajaniservice1@gmail.com"
                 className="text-slate-500 hover:text-blue-400 transition"

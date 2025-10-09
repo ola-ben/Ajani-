@@ -25,10 +25,10 @@ const PrivacyPage = () => {
           <div className="p-6 md:p-8 prose prose-blue max-w-none">
             <div className="mb-8">
               <p className="text-gray-700 leading-relaxed">
-                <strong>Ajani</strong> (“we,” “our,” or “us”) is a smart digital
-                assistant that helps users discover services, businesses, and
-                information. We are committed to safeguarding the privacy of all
-                users in compliance with the{" "}
+                <strong>Ajani</strong> (“we,” “our,” or “us”) is a smart digital{" "}
+                <strong>BN:8846874</strong> assistant that helps users discover
+                services, businesses, and information. We are committed to
+                safeguarding the privacy of all users in compliance with the{" "}
                 <strong>Nigeria Data Protection Regulation (NDPR 2019)</strong>{" "}
                 and other applicable data protection laws.
               </p>
