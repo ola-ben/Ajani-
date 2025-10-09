@@ -28,7 +28,7 @@ const Hero = () => {
           </div>
 
           <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-[#101828]">
-            Hi, I'm Ajani — Your Ibadan Guid
+            Hi, I'm Ajani — Your Ibadan Guide
           </h1>
 
           <p className=":lg:text-lg text-[15px] md:text-xl leading-[1.5] text-slate-600 mb-10">

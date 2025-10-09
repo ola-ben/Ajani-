@@ -29,7 +29,7 @@ const Footer = () => {
             {/* Social Media Icons */}
             <div className="flex space-x-4 text-lg">
               <a
-                href="#"
+                href="https://www.facebook.com/profile.php?id=61580295532814"
                 className="text-slate-500 hover:text-blue-400 transition"
                 aria-label="Facebook"
               >
