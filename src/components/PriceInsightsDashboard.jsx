@@ -578,7 +578,7 @@ const Dashboard = () => {
                   cy="50%"
                   innerRadius={60}
                   outerRadius={80}
-                  paddingAngle={5}
+                  paddingAngle={10}
                   dataKey="value"
                   label={({ name, value }) =>
                     `${name}: ₦${value.toLocaleString()}`
