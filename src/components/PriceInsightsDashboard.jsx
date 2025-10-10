@@ -242,18 +242,10 @@ const Dashboard = () => {
 
   const renderLegendText = (value, entry) => {
     const isActive = activeCategories[value];
-    const textColor = isDarkMode
-      ? isActive
-        ? "#ffffff"
-        : "#777777"
-      : isActive
-      ? "#101828"
-      : "#777777"; // ✅ Light mode: #101828 for active, #777777 for inactive
-
     return (
       <span
         style={{
-          color: textColor,
+          color: isActive ? "#101828" : "#ffffff",
           fontWeight: isActive ? "bold" : "normal",
           textDecoration: isActive ? "none" : "line-through",
           cursor: "pointer",
@@ -262,22 +254,10 @@ const Dashboard = () => {
         }}
         onClick={() => handleLegendClick(entry)}
         onMouseEnter={(e) => {
-          e.target.style.color = isDarkMode
-            ? isActive
-              ? "#05f2c1"
-              : "#aaaaaa"
-            : isActive
-            ? "#05f2c1"
-            : "#aaaaaa";
+          e.target.style.color = isActive ? "#05f2c1" : "#aaaaaa";
         }}
         onMouseLeave={(e) => {
-          e.target.style.color = isDarkMode
-            ? isActive
-              ? "#ffffff"
-              : "#777777"
-            : isActive
-            ? "#101828"
-            : "#777777";
+          e.target.style.color = isActive ? "#ffffff" : "#777777";
         }}
       >
         {value}
@@ -578,7 +558,7 @@ const Dashboard = () => {
             <div className="flex justify-between items-center mb-4">
               <h3
                 className={`font-semibold ${
-                  isDarkMode ? "text-white" : "text-[#101828]"
+                  isDarkMode ? "text-[#fff]" : "text-[#101828]"
                 }`}
               >
                 Category Comparison
