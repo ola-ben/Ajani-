@@ -298,7 +298,7 @@ const Dashboard = () => {
         }`}
       >
         <div className="text-center">
-          <p className="text-xl font-bold font-rubik">⚠️ Error Loading Data</p>
+          <p className="text-xl font-bold font-rubik">⚠️ Error Loading Data..</p>
           <p className="mt-2">{error}</p>
         </div>
       </div>
