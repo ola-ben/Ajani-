@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Logo from "../assets/Logos/logo6.png"
+import Logo from "../assets/Logos/logo6.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,12 +26,15 @@ const Header = () => {
           <nav className="flex items-center justify-between mt-3">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <a href="#" onClick={closeMenu}>
-                <img
-                  src={Logo}
-                  alt="Ajani Logo"
-                  className="h-8 w-24"
-                />
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault(); // Prevent default anchor behavior
+                  window.scrollTo({ top: 0, behavior: "smooth" }); // Smooth scroll to top
+                  closeMenu(); // Close mobile menu if needed
+                }}
+              >
+                <img src={Logo} alt="Ajani Logo" className="h-8 w-24" />
                 <div className="md:text-sm text-[12.5px] text-slate-300 duration-300 hover:text-gray-600">
                   Ibadan Price Insights
                 </div>
@@ -40,28 +43,32 @@ const Header = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex gap-6 text-slate-300 font-medium">
-              <a
-                href="#priceinsight"
-                className="hover:text-slate-600 duration-300"
-              >
-                Price Insights
-              </a>
-              <a href="#vendors" className="hover:text-slate-600 duration-300">
-                For Businesses
-              </a>
-              <a href="#toppicks" className="hover:text-slate-600 duration-300">
-                Top Picks
-              </a>
+              {[
+                { label: "Price Insights", id: "priceinsight" },
+                { label: "Top Picks", id: "toppicks" },
+                { label: "Directory", id: "directory" },
+                { label: "For Businesses", id: "vendors" },
 
-              <a
-                href="#directory"
-                className="hover:text-slate-600 duration-300"
-              >
-                Directory
-              </a>
-              <a href="#faq" className="hover:text-slate-600 duration-300">
-                FAQ
-              </a>
+                { label: "FAQ", id: "faq" },
+              ].map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent instant jump
+                    const element = document.getElementById(item.id);
+                    if (element) {
+                      window.scrollTo({
+                        top: element.offsetTop - 80, // Adjust for fixed header (if any)
+                        behavior: "smooth",
+                      });
+                    }
+                  }}
+                  className="hover:text-slate-600 duration-300"
+                >
+                  {item.label}
+                </a>
+              ))}
             </div>
 
             {/* Desktop WhatsApp Button */}
@@ -118,11 +125,7 @@ const Header = () => {
             {/* Header with logo and close button */}
             <div className="p-5 border-b flex justify-between items-center">
               <a href="#" onClick={closeMenu}>
-                <img
-                  src={Logo}
-                  alt="Ajani Logo"
-                  className="h-8 w-24"
-                />
+                <img src={Logo} alt="Ajani Logo" className="h-8 w-24" />
                 <div className="md:text-sm text-[12.5px] hover:text-slate-600 duration-300 text-slate-300 font-rubik mb-[-2px]">
                   Ibadan Price Insights
                 </div>
@@ -151,43 +154,35 @@ const Header = () => {
 
             {/* Navigation Links */}
             <nav className="flex-1 p-5 space-y-4 font-rubik">
-              <a
-                href="#toppicks"
-                className="block py-2 text-slate-300 duration-300 hover:text-gray-600 font-medium"
-                onClick={closeMenu}
-              >
-                Top Picks
-              </a>
-              <a
-                href="#priceinsight"
-                className="block py-2 text-slate-300 duration-300 hover:text-gray-600 font-medium"
-                onClick={closeMenu}
-              >
-                Price Insights
-              </a>
-              <a
-                href="#vendors"
-                className="block py-2 text-slate-300 duration-300 hover:text-gray-600 font-medium"
-                onClick={closeMenu}
-              >
-                For Businesses
-              </a>
-              <a
-                href="#directory"
-                className="block py-2 text-slate-300 duration-300 hover:text-gray-600 font-medium"
-                onClick={closeMenu}
-              >
-                Directory
-              </a>
-              <a
-                href="#faq"
-                className="block py-2 text-slate-300 duration-300 hover:text-gray-600 font-medium"
-                onClick={closeMenu}
-              >
-                FAQ
-              </a>
-            </nav>
+              {[
+                { label: "Price Insights", id: "priceinsight" },
+                { label: "Top Picks", id: "toppicks" },
+                { label: "Directory", id: "directory" },
+                { label: "For Businesses", id: "vendors" },
 
+                { label: "FAQ", id: "faq" },
+              ].map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  className="block py-2 text-slate-300 duration-300 hover:text-gray-600 font-medium"
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent instant jump
+                    const element = document.getElementById(item.id);
+                    if (element) {
+                      // Smooth scroll to section (adjust -80 for fixed header)
+                      window.scrollTo({
+                        top: element.offsetTop - 80,
+                        behavior: "smooth",
+                      });
+                    }
+                    closeMenu(); // Close mobile menu after click
+                  }}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
             {/* WhatsApp Button at Bottom */}
             <div className="p-5 border-t">
               <a
