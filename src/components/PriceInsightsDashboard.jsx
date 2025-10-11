@@ -108,7 +108,7 @@ const Dashboard = () => {
   } = useGoogleSheet(SHEET_ID, API_KEY);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
-  // ✅ Delay content display by 4 seconds
+  // ✅ Delay content display by 3 seconds
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
@@ -151,6 +151,53 @@ const Dashboard = () => {
       vendor.area?.toLowerCase().includes(selectedArea.toLowerCase());
     return matchesCategory && matchesArea;
   });
+
+  // ✅ Calculate monthly price index
+  const monthlyPriceIndex = {};
+
+  filteredVendors.forEach((vendor) => {
+    const dateStr = vendor.updated_at; // e.g., "2025-09-13"
+    if (!dateStr) return;
+
+    const [year, month] = dateStr.split("-").slice(0, 2);
+    const monthKey = `${year}-${month}`; // e.g., "2025-09"
+
+    const price = parseFloat(vendor.price_from) || 0;
+    if (!monthlyPriceIndex[monthKey]) {
+      monthlyPriceIndex[monthKey] = { total: 0, count: 0 };
+    }
+    monthlyPriceIndex[monthKey].total += price;
+    monthlyPriceIndex[monthKey].count += 1;
+  });
+
+  // ✅ Convert to array and sort by month
+  const monthlyAverages = Object.keys(monthlyPriceIndex)
+    .map((key) => ({
+      month: key,
+      avg: Math.round(
+        monthlyPriceIndex[key].total / monthlyPriceIndex[key].count
+      ),
+    }))
+    .sort((a, b) => a.month.localeCompare(b.month));
+
+  // ✅ Get current and previous month
+  const currentMonthAvg = monthlyAverages[monthlyAverages.length - 1]?.avg || 0;
+  const previousMonthAvg =
+    monthlyAverages[monthlyAverages.length - 2]?.avg || 0;
+
+  // ✅ Calculate percentage change
+  const changePercent =
+    previousMonthAvg > 0
+      ? ((currentMonthAvg - previousMonthAvg) / previousMonthAvg) * 100
+      : 0;
+
+  // ✅ Format for display
+  const changeText =
+    changePercent > 0
+      ? `+${changePercent.toFixed(1)}% from last month`
+      : changePercent < 0
+      ? `${changePercent.toFixed(1)}% from last month`
+      : "No change";
 
   // === CHART DATA ===
   const averagePricesByArea = filteredVendors.reduce((acc, vendor) => {
@@ -242,10 +289,18 @@ const Dashboard = () => {
 
   const renderLegendText = (value, entry) => {
     const isActive = activeCategories[value];
+    const textColor = isDarkMode
+      ? isActive
+        ? "#ffffff"
+        : "#777777"
+      : isActive
+      ? "#101828"
+      : "#777777";
+
     return (
       <span
         style={{
-          color: isActive ? "#101828" : "#ffffff",
+          color: textColor,
           fontWeight: isActive ? "bold" : "normal",
           textDecoration: isActive ? "none" : "line-through",
           cursor: "pointer",
@@ -254,10 +309,22 @@ const Dashboard = () => {
         }}
         onClick={() => handleLegendClick(entry)}
         onMouseEnter={(e) => {
-          e.target.style.color = isActive ? "#05f2c1" : "#aaaaaa";
+          e.target.style.color = isDarkMode
+            ? isActive
+              ? "#05f2c1"
+              : "#aaaaaa"
+            : isActive
+            ? "#05f2c1"
+            : "#aaaaaa";
         }}
         onMouseLeave={(e) => {
-          e.target.style.color = isActive ? "#ffffff" : "#777777";
+          e.target.style.color = isDarkMode
+            ? isActive
+              ? "#ffffff"
+              : "#777777"
+            : isActive
+            ? "#101828"
+            : "#777777";
         }}
       >
         {value}
@@ -298,7 +365,9 @@ const Dashboard = () => {
         }`}
       >
         <div className="text-center">
-          <p className="text-xl font-bold font-rubik">⚠️ Error Loading Data..</p>
+          <p className="text-xl font-bold font-rubik">
+            ⚠️ Error Loading Data..
+          </p>
           <p className="mt-2">{error}</p>
         </div>
       </div>
@@ -445,10 +514,10 @@ const Dashboard = () => {
             {[
               {
                 title: "Price Index",
-                value: `₦${priceIndex.toLocaleString()}`,
-                change: "+5.2% from last month",
-                icon: faArrowUp,
-                color: "text-green-500",
+                value: `₦${currentMonthAvg.toLocaleString()}`,
+                change: changeText,
+                icon: changePercent >= 0 ? faArrowUp : faArrowDown,
+                color: changePercent >= 0 ? "text-green-500" : "text-red-500",
               },
               {
                 title: "Most Affordable Area",
@@ -559,7 +628,7 @@ const Dashboard = () => {
               <div className="flex justify-between items-center mb-4">
                 <h3
                   className={`font-semibold ${
-                    isDarkMode ? "text-[#fff]" : "text-[#101828]"
+                    isDarkMode ? "text-white" : "text-[#101828]"
                   }`}
                 >
                   Category Comparison
@@ -595,7 +664,19 @@ const Dashboard = () => {
                   <Tooltip
                     formatter={(v) => [`₦${v.toLocaleString()}`, "Total"]}
                   />
-                  <Legend formatter={renderLegendText} />
+                  <Legend
+                    formatter={renderLegendText}
+                    wrapperStyle={{
+                      paddingTop: 10,
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                      paddingBottom: 10,
+                      fontSize: "12px",
+                    }}
+                    layout="vertical"
+                    verticalAlign="middle"
+                    align="right"
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
