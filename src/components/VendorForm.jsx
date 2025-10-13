@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { addDoc, collection } from "firebase/firestore";
-import { db, storage } from "../firebaseConfig"; // ✅ Firebase config
 
 const VendorForm = () => {
   const [formData, setFormData] = useState({
@@ -39,7 +36,7 @@ const VendorForm = () => {
     if (!file) return;
 
     const validTypes = ["image/png", "image/jpeg"];
-    const maxSize = 5 * 1024 * 1024;
+    const maxSize = 5 * 1024 * 1024; // 5MB
 
     if (!validTypes.includes(file.type)) {
       showToast("❌ Only PNG and JPG files are allowed.", "error");
@@ -54,18 +51,31 @@ const VendorForm = () => {
     setIsUploading(true);
 
     try {
-      const storageRef = ref(
-        storage,
-        `vendor-images/${Date.now()}_${file.name}`
-      );
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
+      const formDataCloud = new FormData();
+      formDataCloud.append("file", file);
+      formDataCloud.append("upload_preset", "ajani-upload"); // ✅ Must match your preset name
+      formDataCloud.append("cloud_name", "debpabo0a"); // ✅ Replace with YOUR cloud name
 
-      setImageURL(url);
-      setFormData((prev) => ({ ...prev, businessImage: url }));
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/debpabo0a/image/upload", // ✅ No trailing space!
+        {
+          method: "POST",
+          body: formDataCloud,
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.secure_url) {
+        setImageURL(data.secure_url);
+        setFormData((prev) => ({ ...prev, businessImage: data.secure_url }));
+        showToast("✅ Image uploaded successfully!", "success");
+      } else {
+        throw new Error(data.error?.message || "Upload failed");
+      }
     } catch (error) {
-      console.error("Image upload failed:", error);
-      showToast(`❌ Failed to upload image: ${error.message}`, "error");
+      console.error("Cloudinary upload error:", error);
+      showToast(`❌ Upload failed: ${error.message}`, "error");
     } finally {
       setIsUploading(false);
     }
@@ -118,11 +128,19 @@ const VendorForm = () => {
       const payload = {
         ...formData,
         businessImage: imageURL,
-        timestamp: new Date().toISOString(),
-        status: "pending", // Optional: track approval status
       };
 
-      await addDoc(collection(db, "vendors"), payload);
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbwaoXxan7oM9eW2JXuwzcV36GVBKUubB5r2_z_SiFKb-6eJJc0du969ueT8ECkLP4io/exec", // ✅ No trailing space!
+        {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "text/plain",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       showToast(
         "✅ Form submitted! We’ll review and add you to our catalog within 24 hours.",
