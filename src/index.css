@@ -12,9 +12,6 @@
   /* --font-dmsans: "DM Sans", sans-serif; */
 }
 
-
-
-
 /* In your CSS or Tailwind config */
 .wip-banner {
   background: linear-gradient(90deg, #101828 0%, #05f2c1 50%, #3276ee 100%);
@@ -72,4 +69,21 @@ section[id] {
   cursor: pointer;
   border: none;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

@@ -121,7 +121,7 @@ const VendorForm = () => {
 
     const submitBtn = e.target.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = "Submitting...";
+    submitBtn.innerHTML = `Submitting... <span class="spinner"></span>`;
     submitBtn.disabled = true;
 
     try {
@@ -392,7 +392,10 @@ const VendorForm = () => {
                 )}
               </div>
               {isUploading && (
-                <p className="mt-2 text-xs text-blue-400">Uploading...</p>
+                <p className="mt-2 text-xs text-blue-400 flex items-center">
+                  Uploading...
+                  <span className="spinner"></span>
+                </p>
               )}
             </div>
 
