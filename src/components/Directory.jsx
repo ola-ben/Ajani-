@@ -87,10 +87,10 @@ const getFallbackImage = (item) => {
 };
 
 const Directory = () => {
-  const SHEET_ID = "1ZUU4Cw29jhmSnTh1yJ_ZoQB7TN1zr2_7bcMEHP8O1_Y";
-  const API_KEY = "AIzaSyCELfgRKcAaUeLnInsvenpXJRi2kSSwS3E";
+  const GAS_URL =
+    "https://script.google.com/macros/s/AKfycbyV0zaVGTinboXD6aDj-K10fy-j__Tn35XIIl6pHv5NVJnWTHTvZ_u_icCE0mdw1e_Y/exec";
 
-  const { data: listings, loading, error } = useGoogleSheet(SHEET_ID, API_KEY);
+  const { data: listings, loading, error } = useGoogleSheet(GAS_URL);
 
   const [filtered, setFiltered] = useState([]);
   const [search, setSearch] = useState("");
