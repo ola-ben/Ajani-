@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { addDoc, collection } from "firebase/firestore";
+import { db, storage } from "../firebaseConfig"; // ✅ Firebase config
 
 const VendorForm = () => {
   const [formData, setFormData] = useState({
@@ -50,27 +53,16 @@ const VendorForm = () => {
 
     setIsUploading(true);
 
-    const formDataCloud = new FormData();
-    formDataCloud.append("file", file);
-    formDataCloud.append("upload_preset", "ajani_upload");
-
     try {
-      const response = await fetch(
-        "https://api.cloudinary.com/v1_1/debpabo0a/image/upload", // ✅ No trailing space!
-        {
-          method: "POST",
-          body: formDataCloud,
-        }
+      const storageRef = ref(
+        storage,
+        `vendor-images/${Date.now()}_${file.name}`
       );
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
 
-      const data = await response.json();
-
-      if (data.secure_url) {
-        setImageURL(data.secure_url);
-        setFormData((prev) => ({ ...prev, businessImage: data.secure_url }));
-      } else {
-        throw new Error(data.error?.message || "Upload failed");
-      }
+      setImageURL(url);
+      setFormData((prev) => ({ ...prev, businessImage: url }));
     } catch (error) {
       console.error("Image upload failed:", error);
       showToast(`❌ Failed to upload image: ${error.message}`, "error");
@@ -126,19 +118,11 @@ const VendorForm = () => {
       const payload = {
         ...formData,
         businessImage: imageURL,
+        timestamp: new Date().toISOString(),
+        status: "pending", // Optional: track approval status
       };
 
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbxKgc-mo5mWjrXQgY8_sEHDRDtHASPSdSq0wvu8_8dgcTX6DRvIzb_EAaq7mCcbki1r/exec", // ✅ No trailing space!
-        {
-          method: "POST",
-          mode: "no-cors",
-          headers: {
-            "Content-Type": "text/plain",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      await addDoc(collection(db, "vendors"), payload);
 
       showToast(
         "✅ Form submitted! We’ll review and add you to our catalog within 24 hours.",
