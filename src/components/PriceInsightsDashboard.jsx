@@ -547,7 +547,7 @@ const Dashboard = () => {
 
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Bar Chart */}
+            {/* Bar Chart — Average Prices by Area */}
             <div
               className={`p-4 rounded-lg shadow border ${
                 isDarkMode
@@ -557,7 +557,7 @@ const Dashboard = () => {
             >
               <div className="flex justify-between items-center mb-4">
                 <h3
-                  className={`font-semibold ${
+                  className={`font-semibold text-sm ${
                     isDarkMode ? "text-white" : "text-[#101828]"
                   }`}
                 >
@@ -566,24 +566,58 @@ const Dashboard = () => {
                 <span className="bg-blue-100 p-2 rounded-full">
                   <FontAwesomeIcon
                     icon={faMapMarkerAlt}
-                    className="text-[#1ab9d6]"
+                    className="text-[#1ab9d6] text-xs"
                   />
                 </span>
               </div>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={sortedAvgPricesArray}>
+                  {/* Gridlines */}
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke={isDarkMode ? "#444" : "#ddd"}
+                    stroke={isDarkMode ? "#333" : "#eee"}
+                    vertical={false} // optional: remove vertical grid if you want clean look
                   />
-                  <XAxis dataKey="area" stroke={isDarkMode ? "#aaa" : "#666"} />
+
+                  {/* X-Axis: Area names */}
+                  <XAxis
+                    dataKey="area"
+                    stroke={isDarkMode ? "#aaa" : "#666"}
+                    tick={{ fontSize: 12 }}
+                    interval="preserveStartEnd" // show all area names
+                    axisLine={false}
+                    tickLine={false}
+                  />
+
+                  {/* Y-Axis: Format as ₦0, ₦25k, ₦50k, ₦75k, ₦100k */}
                   <YAxis
                     stroke={isDarkMode ? "#aaa" : "#666"}
-                    tickFormatter={(v) => `₦${v}`}
+                    tick={{ fontSize: 12 }}
+                    tickFormatter={(v) => {
+                      if (v >= 100000) return `₦${(v / 1000).toFixed(0)}k`;
+                      if (v >= 75000) return `₦${(v / 1000).toFixed(0)}k`;
+                      if (v >= 50000) return `₦${(v / 1000).toFixed(0)}k`;
+                      if (v >= 25000) return `₦${(v / 1000).toFixed(0)}k`;
+                      return `₦${v}`;
+                    }}
+                    domain={[0, "auto"]} // auto-scale based on data
+                    axisLine={false}
+                    tickLine={false}
                   />
+
+                  {/* Tooltip */}
                   <Tooltip
                     formatter={(v) => [`₦${v.toLocaleString()}`, "Price"]}
+                    contentStyle={{
+                      backgroundColor: isDarkMode ? "#1e1e1e" : "#fff",
+                      border: `1px solid ${isDarkMode ? "#333" : "#ddd"}`,
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                    }}
+                    itemStyle={{ color: isDarkMode ? "#fff" : "#333" }}
                   />
+
+                  {/* Bars with Multi-Color */}
                   <Bar
                     dataKey="price"
                     onClick={handleBarClick}
@@ -601,7 +635,6 @@ const Dashboard = () => {
             </div>
 
             {/* Line Chart - Monthly Price Trends */}
-            {/* Line Chart - Monthly Price Trends */}
             <div
               className={`p-4 rounded-lg shadow border ${
                 isDarkMode
@@ -611,7 +644,7 @@ const Dashboard = () => {
             >
               <div className="flex justify-between items-center mb-4">
                 <h3
-                  className={`font-semibold ${
+                  className={`font-semibold text-sm ${
                     isDarkMode ? "text-white" : "text-[#101828]"
                   }`}
                 >
@@ -620,43 +653,85 @@ const Dashboard = () => {
                 <span className="bg-blue-100 p-2 rounded-full">
                   <FontAwesomeIcon
                     icon={faArrowUp}
-                    className="text-[#1ab9d6]"
+                    className="text-[#1ab9d6] text-xs"
                   />
                 </span>
               </div>
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={monthlyAverages}>
+                  {/* Gridlines */}
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke={isDarkMode ? "#444" : "#ddd"}
+                    stroke={isDarkMode ? "#333" : "#eee"}
+                    vertical={false} // optional: remove vertical grid if you want clean look
                   />
+
+                  {/* X-Axis: Month/Year format */}
                   <XAxis
                     dataKey="month"
                     stroke={isDarkMode ? "#aaa" : "#666"}
+                    tick={{ fontSize: 12 }}
                     tickFormatter={(tick) => {
                       const [year, month] = tick.split("-");
                       return `${month}/${year.slice(2)}`; // e.g., "09/25"
                     }}
+                    interval="preserveStartEnd" // show all ticks
+                    axisLine={false}
+                    tickLine={false}
                   />
+
+                  {/* Y-Axis: Format as ₦0, ₦20,000, ₦40,000, etc. */}
                   <YAxis
                     stroke={isDarkMode ? "#aaa" : "#666"}
-                    tickFormatter={(v) => `₦${v.toLocaleString()}`}
+                    tick={{ fontSize: 12 }}
+                    tickFormatter={(v) => {
+                      if (v >= 100000) return `₦${(v / 1000).toFixed(0)}k`;
+                      if (v >= 10000) return `₦${(v / 1000).toFixed(0)}k`;
+                      return `₦${v}`;
+                    }}
+                    domain={[0, "auto"]} // auto-scale based on data
+                    axisLine={false}
+                    tickLine={false}
                   />
+
+                  {/* Tooltip */}
                   <Tooltip
                     formatter={(v) => [`₦${v.toLocaleString()}`, "Price Index"]}
                     labelFormatter={(label) => `Month: ${label}`}
+                    contentStyle={{
+                      backgroundColor: isDarkMode ? "#1e1e1e" : "#fff",
+                      border: `1px solid ${isDarkMode ? "#333" : "#ddd"}`,
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                    }}
+                    itemStyle={{ color: isDarkMode ? "#fff" : "#333" }}
                   />
+
+                  {/* Line with Animation & Small Dots */}
                   <Line
-                    type="linear" // ✅ This makes the line straight between points
+                    type="linear"
                     dataKey="avg"
                     stroke="#05f2c1"
-                    strokeWidth={3}
-                    dot={{ r: 6, fill: "#05f2c1" }}
+                    strokeWidth={2}
+                    dot={{
+                      r: 3, // ✅ Smaller dot
+                      fill: "#05f2c1",
+                      stroke: isDarkMode ? "#000" : "#fff", // subtle outline
+                      strokeWidth: 1,
+                    }}
                     activeDot={{
-                      r: 8,
+                      r: 5,
                       fill: "#05f2c1",
                       stroke: "#ffffff",
                       strokeWidth: 2,
+                    }}
+                    animationDuration={1500} // ✅ Smooth animation on load
+                    animationEasing="ease-out"
+                    onMouseEnter={() => {
+                      document.body.style.cursor = "pointer";
+                    }}
+                    onMouseLeave={() => {
+                      document.body.style.cursor = "default";
                     }}
                   />
                 </LineChart>
