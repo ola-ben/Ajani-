@@ -7,10 +7,9 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
+  LineChart,
+  Line,
+  Cell, // ✅ Re-add this
 } from "recharts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -243,25 +242,6 @@ const Dashboard = () => {
         )
       : { area: "—", price: 0 };
 
-  const categoryComparisonData = [
-    { name: "Accommodation", value: 0 },
-    { name: "Transportation", value: 0 },
-    { name: "Weekend Event", value: 0 },
-  ];
-
-  filteredVendors.forEach((vendor) => {
-    const cat = vendor.category;
-    const price = parseFloat(vendor.price_from) || 0;
-
-    if (cat === "accommodation.hotel") {
-      categoryComparisonData[0].value += price;
-    } else if (cat === "transport.ridehail") {
-      categoryComparisonData[1].value += price;
-    } else if (cat === "event.weekend") {
-      categoryComparisonData[2].value += price;
-    }
-  });
-
   const COLORS = ["#101828", "#05f2c1", "#3276ee"];
 
   // Auto-refetch every 90 seconds
@@ -276,61 +256,61 @@ const Dashboard = () => {
     setSelectedArea(data.area);
   };
 
-  const handleLegendClick = (entry) => {
-    setActiveCategories((prev) => ({
-      ...prev,
-      [entry.value]: !prev[entry.value],
-    }));
-  };
+  // const handleLegendClick = (entry) => {
+  //   setActiveCategories((prev) => ({
+  //     ...prev,
+  //     [entry.value]: !prev[entry.value],
+  //   }));
+  // };
 
-  const filteredPieData = categoryComparisonData.filter(
-    (item) => activeCategories[item.name]
-  );
+  // const filteredPieData = categoryComparisonData.filter(
+  //   (item) => activeCategories[item.name]
+  // );
 
-  const renderLegendText = (value, entry) => {
-    const isActive = activeCategories[value];
-    const textColor = isDarkMode
-      ? isActive
-        ? "#ffffff"
-        : "#777777"
-      : isActive
-      ? "#101828"
-      : "#777777";
+  // const renderLegendText = (value, entry) => {
+  //   const isActive = activeCategories[value];
+  //   const textColor = isDarkMode
+  //     ? isActive
+  //       ? "#ffffff"
+  //       : "#777777"
+  //     : isActive
+  //     ? "#101828"
+  //     : "#777777";
 
-    return (
-      <span
-        style={{
-          color: textColor,
-          fontWeight: isActive ? "bold" : "normal",
-          textDecoration: isActive ? "none" : "line-through",
-          cursor: "pointer",
-          padding: "0 4px",
-          transition: "all 0.2s ease",
-        }}
-        onClick={() => handleLegendClick(entry)}
-        onMouseEnter={(e) => {
-          e.target.style.color = isDarkMode
-            ? isActive
-              ? "#05f2c1"
-              : "#aaaaaa"
-            : isActive
-            ? "#05f2c1"
-            : "#aaaaaa";
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.color = isDarkMode
-            ? isActive
-              ? "#ffffff"
-              : "#777777"
-            : isActive
-            ? "#101828"
-            : "#777777";
-        }}
-      >
-        {value}
-      </span>
-    );
-  };
+  //   return (
+  //     <span
+  //       style={{
+  //         color: textColor,
+  //         fontWeight: isActive ? "bold" : "normal",
+  //         textDecoration: isActive ? "none" : "line-through",
+  //         cursor: "pointer",
+  //         padding: "0 4px",
+  //         transition: "all 0.2s ease",
+  //       }}
+  //       onClick={() => handleLegendClick(entry)}
+  //       onMouseEnter={(e) => {
+  //         e.target.style.color = isDarkMode
+  //           ? isActive
+  //             ? "#05f2c1"
+  //             : "#aaaaaa"
+  //           : isActive
+  //           ? "#05f2c1"
+  //           : "#aaaaaa";
+  //       }}
+  //       onMouseLeave={(e) => {
+  //         e.target.style.color = isDarkMode
+  //           ? isActive
+  //             ? "#ffffff"
+  //             : "#777777"
+  //           : isActive
+  //           ? "#101828"
+  //           : "#777777";
+  //       }}
+  //     >
+  //       {value}
+  //     </span>
+  //   );
+  // };
 
   // ✅ Pull-to-refresh
   const handleTouchStart = (e) => {
@@ -390,11 +370,14 @@ const Dashboard = () => {
   }
 
   return (
-    <section id="priceinsight">
+    <section
+      id="priceinsight"
+      className={`min-h-screen transition-colors duration-300 ${
+        isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
+      }`}
+    >
       <div
-        className={`min-h-screen transition-colors duration-300 ${
-          isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
-        }`}
+        className="min-h-screen max-w-7xl mx-auto"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -617,7 +600,8 @@ const Dashboard = () => {
               </ResponsiveContainer>
             </div>
 
-            {/* Pie Chart */}
+            {/* Line Chart - Monthly Price Trends */}
+            {/* Line Chart - Monthly Price Trends */}
             <div
               className={`p-4 rounded-lg shadow border ${
                 isDarkMode
@@ -631,53 +615,51 @@ const Dashboard = () => {
                     isDarkMode ? "text-white" : "text-[#101828]"
                   }`}
                 >
-                  Category Comparison
+                  Monthly Price Trends
                 </h3>
                 <span className="bg-blue-100 p-2 rounded-full">
                   <FontAwesomeIcon
-                    icon={faLayerGroup}
+                    icon={faArrowUp}
                     className="text-[#1ab9d6]"
                   />
                 </span>
               </div>
               <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={filteredPieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={10}
-                    dataKey="value"
-                    label={({ name, value }) =>
-                      `${name}: ₦${value.toLocaleString()}`
-                    }
-                  >
-                    {filteredPieData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(v) => [`₦${v.toLocaleString()}`, "Total"]}
+                <LineChart data={monthlyAverages}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke={isDarkMode ? "#444" : "#ddd"}
                   />
-                  <Legend
-                    formatter={renderLegendText}
-                    wrapperStyle={{
-                      paddingTop: 10,
-                      paddingLeft: 10,
-                      paddingRight: 10,
-                      paddingBottom: 10,
-                      fontSize: "12px",
+                  <XAxis
+                    dataKey="month"
+                    stroke={isDarkMode ? "#aaa" : "#666"}
+                    tickFormatter={(tick) => {
+                      const [year, month] = tick.split("-");
+                      return `${month}/${year.slice(2)}`; // e.g., "09/25"
                     }}
-                    layout="vertical"
-                    verticalAlign="middle"
-                    align="right"
                   />
-                </PieChart>
+                  <YAxis
+                    stroke={isDarkMode ? "#aaa" : "#666"}
+                    tickFormatter={(v) => `₦${v.toLocaleString()}`}
+                  />
+                  <Tooltip
+                    formatter={(v) => [`₦${v.toLocaleString()}`, "Price Index"]}
+                    labelFormatter={(label) => `Month: ${label}`}
+                  />
+                  <Line
+                    type="linear" // ✅ This makes the line straight between points
+                    dataKey="avg"
+                    stroke="#05f2c1"
+                    strokeWidth={3}
+                    dot={{ r: 6, fill: "#05f2c1" }}
+                    activeDot={{
+                      r: 8,
+                      fill: "#05f2c1",
+                      stroke: "#ffffff",
+                      strokeWidth: 2,
+                    }}
+                  />
+                </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
