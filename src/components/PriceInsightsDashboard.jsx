@@ -627,7 +627,11 @@ const Dashboard = () => {
 
               {/* ✅ Wrap in div to prevent focus outline */}
               <div tabIndex="-1" style={{ outline: "none" }}>
-                <ResponsiveContainer width="100%" height={250}>
+                <ResponsiveContainer
+                  width="100%"
+                  height={250}
+                  margin={{ top: 5, right: 10, left: 10, bottom: 40 }}
+                >
                   <LineChart data={monthlyAverages}>
                     {/* Gridlines */}
                     <CartesianGrid
